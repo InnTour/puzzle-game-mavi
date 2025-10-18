@@ -68,8 +68,9 @@ def generate_thumbnail_url(public_id: str, width: int = 300, height: int = 225) 
         width=width,
         height=height,
         crop="fill",
-        quality="auto:good",
-        format="webp"
+        gravity="auto",
+        quality="auto:best",
+        format="auto"
     )
 
 
