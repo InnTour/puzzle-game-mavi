@@ -44,7 +44,6 @@ async def upload_puzzle_image(file: UploadFile) -> Dict:
             folder="mavi-puzzles",
             resource_type="image",
             quality="auto:best",
-            format="auto",
             tags=["puzzle", "mavi", "historical"]
         )
         
