@@ -111,7 +111,7 @@ def generate_puzzle_pieces(public_id: str, image_width: int, image_height: int, 
             current_width = piece_width if col < cols - 1 else (image_width - x)
             current_height = piece_height if row < rows - 1 else (image_height - y)
             
-            # Generate transformation URL
+            # Generate transformation URL with optimized settings
             piece_url = cloudinary.CloudinaryImage(public_id).build_url(
                 transformation=[
                     {
@@ -122,8 +122,9 @@ def generate_puzzle_pieces(public_id: str, image_width: int, image_height: int, 
                         "height": current_height
                     },
                     {
-                        "quality": "auto:good",
-                        "format": "webp"
+                        "quality": "auto:best",
+                        "format": "auto",
+                        "gravity": "auto"
                     }
                 ]
             )
