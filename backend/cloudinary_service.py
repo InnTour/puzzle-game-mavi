@@ -38,13 +38,14 @@ async def upload_puzzle_image(file: UploadFile) -> Dict:
         # Read file contents
         contents = await file.read()
         
-        # Upload to Cloudinary
+        # Upload to Cloudinary with optimized settings
         result = cloudinary.uploader.upload(
             contents,
-            folder="puzzle_images",
+            folder="mavi-puzzles",
             resource_type="image",
-            quality="auto:good",
-            format="webp"
+            quality="auto:best",
+            format="auto",
+            tags=["puzzle", "mavi", "historical"]
         )
         
         return {
