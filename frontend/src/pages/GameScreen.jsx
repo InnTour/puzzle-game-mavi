@@ -62,6 +62,14 @@ const GameScreen = () => {
     handlePointerDown,
   } = useDragAndDrop(placePiece, removePiece);
 
+  // Esponi handlePointerDown globalmente per pezzi sulla board
+  React.useEffect(() => {
+    window.handlePiecePointerDown = handlePointerDown;
+    return () => {
+      delete window.handlePiecePointerDown;
+    };
+  }, [handlePointerDown]);
+
   const handleRestart = () => {
     if (window.confirm('Are you sure you want to restart the puzzle?')) {
       restartGame();
