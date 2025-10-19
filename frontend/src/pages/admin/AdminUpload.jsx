@@ -100,7 +100,7 @@ const AdminUpload = () => {
       description: '',
       category: 'Historical',
       tags: '',
-      difficulty_available: ['easy', 'medium', 'hard', 'expert'],
+      difficulty_available: ['beginner', 'easy', 'medium', 'hard', 'expert', 'master'],
       status: 'published',
       is_featured: false,
     });
