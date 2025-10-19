@@ -1,9 +1,11 @@
 // Grid configurations
 export const GRID_CONFIG = {
+  beginner: { rows: 2, cols: 2, label: 'Beginner (2×2)', pieces: 4 },
   easy: { rows: 3, cols: 3, label: 'Easy (3×3)', pieces: 9 },
   medium: { rows: 4, cols: 4, label: 'Medium (4×4)', pieces: 16 },
   hard: { rows: 5, cols: 5, label: 'Hard (5×5)', pieces: 25 },
   expert: { rows: 6, cols: 6, label: 'Expert (6×6)', pieces: 36 },
+  master: { rows: 7, cols: 7, label: 'Master (7×7)', pieces: 49 },
 };
 
 // Shuffle array using Fisher-Yates algorithm
