@@ -39,10 +39,12 @@ export const checkWinCondition = (pieces) => {
 // Calculate score based on time and moves
 export const calculateScore = (difficulty, timeInSeconds, moves) => {
   const difficultyMultipliers = {
+    beginner: 0.5,
     easy: 1.0,
     medium: 1.5,
     hard: 2.0,
     expert: 2.5,
+    master: 3.0,
   };
   
   const baseScore = 10000;
