@@ -11,11 +11,16 @@ export const useDragAndDrop = (onPiecePlaced, onPieceRemoved) => {
 
   // Handle pointer down (start drag)
   const handlePointerDown = useCallback((e, piece) => {
-    // Ignore if already placed and locked
-    if (piece.isPlaced) return;
+    // MODIFICATO: Permetti drag anche per pezzi già posizionati
+    // Rimuovere il check: if (piece.isPlaced) return;
     
     e.preventDefault();
     e.stopPropagation();
+    
+    // Se il pezzo è già posizionato, rimuovilo dalla board
+    if (piece.isPlaced && piece.currentPosition !== null) {
+      onPieceRemoved(piece.id);
+    }
     
     const target = e.currentTarget;
     const rect = target.getBoundingClientRect();
@@ -35,7 +40,7 @@ export const useDragAndDrop = (onPiecePlaced, onPieceRemoved) => {
     
     // Capture pointer for reliable tracking
     target.setPointerCapture(e.pointerId);
-  }, []);
+  }, [onPieceRemoved]);
 
   // Handle pointer move (dragging)
   const handlePointerMove = useCallback((e) => {
