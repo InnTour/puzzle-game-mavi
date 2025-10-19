@@ -45,7 +45,7 @@ const GameBoard = ({ difficulty, pieces, currentDropZone }) => {
               data-drop-zone="true"
               data-position={index}
               data-occupied={isOccupied}
-              className={`drop-zone ${
+              className={`drop-zone ${ 
                 isOccupied ? 'occupied' : ''
               } ${
                 isCurrentDropZone && !isOccupied ? 'highlight' : ''
@@ -53,13 +53,26 @@ const GameBoard = ({ difficulty, pieces, currentDropZone }) => {
               data-testid={`drop-zone-${index}`}
             >
               {piece && (
-                <img
-                  src={piece.imageUrl}
-                  alt={`Piece ${index}`}
-                  className="puzzle-piece placed"
-                  draggable="false"
-                  data-testid={`placed-piece-${index}`}
-                />
+                <div
+                  className="puzzle-piece-wrapper placed-draggable"
+                  onPointerDown={(e) => {
+                    // Permetti di draggare pezzi già posizionati
+                    e.stopPropagation();
+                    const pieceData = pieces.find(p => p.currentPosition === index);
+                    if (pieceData && typeof window.handlePiecePointerDown === 'function') {
+                      window.handlePiecePointerDown(e, pieceData);
+                    }
+                  }}
+                  style={{ cursor: 'grab' }}
+                >
+                  <img
+                    src={piece.imageUrl}
+                    alt={`Piece ${index}`}
+                    className="puzzle-piece placed"
+                    draggable="false"
+                    data-testid={`placed-piece-${index}`}
+                  />
+                </div>
               )}
             </div>
           );
