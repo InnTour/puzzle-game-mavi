@@ -4,6 +4,11 @@ import { Puzzle, Grid3x3, Clock } from 'lucide-react';
 import { puzzleAPI } from '../utils/api';
 
 const PuzzleCard = ({ puzzle, onClick }) => {
+  const [imageError, setImageError] = useState(false);
+  
+  // Fallback: usa original_image.url se thumbnail_url non disponibile
+  const imageUrl = puzzle.thumbnail_url || puzzle.original_image?.url || '';
+  
   return (
     <div
       className="puzzle-card"
@@ -11,11 +16,18 @@ const PuzzleCard = ({ puzzle, onClick }) => {
       data-testid={`puzzle-card-${puzzle.id}`}
     >
       <div className="puzzle-card-image">
-        <img
-          src={puzzle.thumbnail_url}
-          alt={puzzle.title}
-          className="w-full h-full object-cover"
-        />
+        {!imageError ? (
+          <img
+            src={imageUrl}
+            alt={puzzle.title}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="puzzle-placeholder">
+            <Puzzle className="w-16 h-16 text-slate-600" />
+          </div>
+        )}
         {puzzle.is_featured && (
           <div className="puzzle-featured-badge">
             Featured
