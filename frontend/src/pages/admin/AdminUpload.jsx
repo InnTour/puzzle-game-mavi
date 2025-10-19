@@ -224,7 +224,7 @@ const AdminUpload = () => {
           <div className="form-group">
             <label className="form-label">Available Difficulties *</label>
             <div className="difficulty-checkboxes">
-              {['easy', 'medium', 'hard', 'expert'].map(diff => (
+              {['beginner', 'easy', 'medium', 'hard', 'expert', 'master'].map(diff => (
                 <label key={diff} className="checkbox-label">
                   <input
                     type="checkbox"
