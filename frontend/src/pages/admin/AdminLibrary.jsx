@@ -170,9 +170,13 @@ const AdminLibrary = () => {
                   <tr key={puzzle.id} data-testid={`puzzle-row-${puzzle.id}`}>
                     <td>
                       <img
-                        src={puzzle.thumbnail_url}
+                        src={puzzle.thumbnail_url || puzzle.original_image?.url}
                         alt={puzzle.title}
                         className="table-thumbnail"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.parentElement.innerHTML = '<div class="puzzle-placeholder" style="width:80px;height:60px;display:flex;align-items:center;justify-content:center;background:rgba(30,41,59,0.6);border-radius:8px;"><span style="color:#64748B;">No img</span></div>';
+                        }}
                       />
                     </td>
                     <td>
