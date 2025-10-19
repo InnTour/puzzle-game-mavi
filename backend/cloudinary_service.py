@@ -8,10 +8,12 @@ from fastapi import UploadFile, HTTPException
 
 # Grid configurations
 GRID_CONFIG = {
+    "beginner": {"rows": 2, "cols": 2},
     "easy": {"rows": 3, "cols": 3},
     "medium": {"rows": 4, "cols": 4},
     "hard": {"rows": 5, "cols": 5},
-    "expert": {"rows": 6, "cols": 6}
+    "expert": {"rows": 6, "cols": 6},
+    "master": {"rows": 7, "cols": 7}
 }
 
 
