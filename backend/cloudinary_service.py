@@ -144,7 +144,7 @@ def generate_all_difficulty_pieces(public_id: str, image_width: int, image_heigh
     """
     pieces = {}
     
-    for difficulty in ["easy", "medium", "hard", "expert"]:
+    for difficulty in ["beginner", "easy", "medium", "hard", "expert", "master"]:
         pieces[difficulty] = generate_puzzle_pieces(public_id, image_width, image_height, difficulty)
     
     return pieces
