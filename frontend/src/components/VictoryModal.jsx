@@ -7,6 +7,7 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const VictoryModal = ({ puzzle, difficulty, timer, moves, score, onPlayAgain, onNewPuzzle }) => {
+  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const [rank, setRank] = useState(null);
   const [achievements, setAchievements] = useState([]);
