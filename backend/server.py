@@ -71,6 +71,10 @@ async def get_status_checks():
 from admin_routes import router as admin_router
 api_router.include_router(admin_router)
 
+# Import and include score routes
+from score_routes import router as score_router
+api_router.include_router(score_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
