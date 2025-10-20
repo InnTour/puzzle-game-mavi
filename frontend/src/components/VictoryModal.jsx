@@ -122,6 +122,13 @@ const VictoryModal = ({ puzzle, difficulty, timer, moves, score, onPlayAgain, on
         {/* Actions */}
         <div className="victory-actions">
           <button
+            onClick={() => navigate('/leaderboard')}
+            className="btn-secondary"
+            data-testid="view-leaderboard-button"
+          >
+            View Leaderboard
+          </button>
+          <button
             onClick={onPlayAgain}
             className="btn-primary"
             data-testid="play-again-button"
