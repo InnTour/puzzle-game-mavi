@@ -98,13 +98,15 @@ def generate_puzzle_pieces(public_id: str, image_width: int, image_height: int, 
     rows = config["rows"]
     cols = config["cols"]
     
-    # STANDARDIZED IMAGE SIZE: 1260x1260 (divisibile per 2,3,4,5,6,7)
-    # 1260 / 2 = 630, 1260 / 3 = 420, 1260 / 4 = 315, 1260 / 5 = 252, 1260 / 6 = 210, 1260 / 7 = 180
-    STANDARD_SIZE = 1260
+    # STANDARDIZED IMAGE SIZE: 1260x840 (rettangolo 3:2, divisibile per 2,3,4,5,6,7)
+    # Width = 420 * 3 = 1260 (divisibile per 2,3,4,5,6,7)
+    # Height = 420 * 2 = 840 (divisibile per 2,3,4,5,6,7)
+    STANDARD_WIDTH = 1260
+    STANDARD_HEIGHT = 840
     
     # Calculate perfect piece dimensions (no rounding needed!)
-    piece_width = STANDARD_SIZE // cols
-    piece_height = STANDARD_SIZE // rows
+    piece_width = STANDARD_WIDTH // cols
+    piece_height = STANDARD_HEIGHT // rows
     
     piece_urls = []
     
