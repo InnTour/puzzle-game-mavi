@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sparkles, Trophy, Clock, Hash, Award } from 'lucide-react';
 import { formatTime } from '../utils/gameLogic';
 import axios from 'axios';
