@@ -403,6 +403,7 @@ h1, h2, h3 {
   }
 }
 
+/* Puzzle Pieces - NO BORDERS per seamless stitching */
 .puzzle-piece {
   width: 100%;
   height: 100%;
@@ -410,11 +411,13 @@ h1, h2, h3 {
   pointer-events: none;
   user-select: none;
   draggable: false;
+  border-radius: 0; /* NO border-radius per stitching perfetto */
+  display: block; /* Rimuove spazi white-space */
 }
 
 .puzzle-piece-wrapper {
   cursor: grab;
-  border-radius: 10px;
+  border-radius: 0; /* NO border-radius */
   border: 2px solid rgba(6, 182, 212, 0.2);
   background: #1E293B;
   touch-action: none;
@@ -430,6 +433,18 @@ h1, h2, h3 {
 
 .puzzle-piece-wrapper.dragging {
   opacity: 0.3;
+}
+
+.puzzle-piece-wrapper.placed-draggable {
+  border: none; /* NESSUN border quando posizionato */
+  border-radius: 0;
+  cursor: grab;
+}
+
+.puzzle-piece-wrapper.placed-draggable:hover {
+  cursor: grab;
+  transform: none; /* NO scale quando hover su piece posizionato */
+  box-shadow: none;
 }
 
 .puzzle-piece-ghost {
