@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PuzzleGallery from "./pages/PuzzleGallery";
 import PuzzleSetup from "./pages/PuzzleSetup";
 import GameScreen from "./pages/GameScreen";
+import Leaderboard from "./pages/Leaderboard";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUpload from "./pages/admin/AdminUpload";
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" element={<PuzzleGallery />} />
           <Route path="/puzzle/:puzzleId" element={<PuzzleSetup />} />
           <Route path="/play/:puzzleId/:difficulty" element={<GameScreen />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
           
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />
