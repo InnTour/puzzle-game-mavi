@@ -9,6 +9,8 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUpload from "./pages/admin/AdminUpload";
 import AdminLibrary from "./pages/admin/AdminLibrary";
+import AdminLeaderboard from "./pages/admin/AdminLeaderboard";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/upload" element={<AdminUpload />} />
           <Route path="/admin/library" element={<AdminLibrary />} />
+          <Route path="/admin/leaderboard" element={<AdminLeaderboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
         </Routes>
       </BrowserRouter>
     </div>
