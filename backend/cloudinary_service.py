@@ -80,11 +80,13 @@ def generate_puzzle_pieces(public_id: str, image_width: int, image_height: int, 
     Generate puzzle piece URLs for a specific difficulty using Cloudinary transformations.
     Pieces are generated dynamically via crop transformations.
     
+    IMPORTANT: We standardize image to 1260x1260 for perfect division by all grids (2,3,4,5,6,7).
+    
     Args:
         public_id: Cloudinary public ID of the uploaded image
-        image_width: Original image width
-        image_height: Original image height
-        difficulty: Difficulty level (easy, medium, hard, expert)
+        image_width: Original image width (not used, we standardize)
+        image_height: Original image height (not used, we standardize)
+        difficulty: Difficulty level (beginner, easy, medium, hard, expert, master)
     
     Returns:
         List of transformation URLs for each puzzle piece
@@ -96,28 +98,47 @@ def generate_puzzle_pieces(public_id: str, image_width: int, image_height: int, 
     rows = config["rows"]
     cols = config["cols"]
     
-    # Calculate piece dimensions
-    piece_width = math.floor(image_width / cols)
-    piece_height = math.floor(image_height / rows)
+    # STANDARDIZED IMAGE SIZE: 1260x1260 (divisibile per 2,3,4,5,6,7)
+    # 1260 / 2 = 630, 1260 / 3 = 420, 1260 / 4 = 315, 1260 / 5 = 252, 1260 / 6 = 210, 1260 / 7 = 180
+    STANDARD_SIZE = 1260
+    
+    # Calculate perfect piece dimensions (no rounding needed!)
+    piece_width = STANDARD_SIZE // cols
+    piece_height = STANDARD_SIZE // rows
     
     piece_urls = []
     
     for row in range(rows):
         for col in range(cols):
-            # Calculate crop coordinates
+            # Calculate crop coordinates (perfect alignment)
             x = col * piece_width
             y = row * piece_height
             
-            # Handle last column/row to include remaining pixels
-            current_width = piece_width if col < cols - 1 else (image_width - x)
-            current_height = piece_height if row < rows - 1 else (image_height - y)
-            
-            # Generate transformation URL with optimized settings
+            # Generate transformation URL with:
+            # 1. First resize to standard size
+            # 2. Then crop to exact piece
             piece_url = cloudinary.CloudinaryImage(public_id).build_url(
                 transformation=[
                     {
+                        "width": STANDARD_SIZE,
+                        "height": STANDARD_SIZE,
+                        "crop": "fill",
+                        "gravity": "auto"
+                    },
+                    {
                         "crop": "crop",
                         "x": x,
+                        "y": y,
+                        "width": piece_width,
+                        "height": piece_height
+                    },
+                    {
+                        "quality": "auto:best",
+                        "format": "auto",
+                        "gravity": "auto"
+                    }
+                ]
+            )
                         "y": y,
                         "width": current_width,
                         "height": current_height
