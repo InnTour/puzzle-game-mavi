@@ -1186,3 +1186,214 @@ h1, h2, h3 {
   justify-content: center;
   background: rgba(30, 41, 59, 0.6);
 }
+
+/* ============ LEADERBOARD STYLES ============ */
+.leaderboard-page {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.leaderboard-header {
+  margin-bottom: 2rem;
+}
+
+.leaderboard-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.leaderboard-filters {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.leaderboard-container {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.leaderboard-table-wrapper {
+  overflow-x: auto;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table thead {
+  background: rgba(6, 182, 212, 0.1);
+}
+
+.leaderboard-table th {
+  padding: 1rem;
+  text-align: left;
+  color: #06B6D4;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+.leaderboard-table td {
+  padding: 1rem;
+  border-top: 1px solid rgba(6, 182, 212, 0.1);
+  color: #F8FAFC;
+}
+
+.leaderboard-table tbody tr:hover {
+  background: rgba(6, 182, 212, 0.05);
+}
+
+.leaderboard-table tbody tr.top-three {
+  background: rgba(251, 191, 36, 0.05);
+}
+
+.rank-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+}
+
+.player-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.player-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(6, 182, 212, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-placeholder {
+  font-weight: 700;
+  color: #06B6D4;
+  font-size: 1.125rem;
+}
+
+.player-name {
+  font-weight: 600;
+  color: #06B6D4;
+}
+
+.puzzle-title {
+  color: #94A3B8;
+  font-size: 0.875rem;
+}
+
+.difficulty-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid;
+}
+
+.score-value {
+  font-weight: 700;
+  color: #FBBF24;
+  font-size: 1.125rem;
+}
+
+.stat-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #94A3B8;
+  font-size: 0.875rem;
+}
+
+/* Achievement Styles */
+.achievements-section {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 16px;
+}
+
+.achievements-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.achievement-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.achievement-icon {
+  font-size: 2.5rem;
+}
+
+.achievement-name {
+  font-weight: 700;
+  color: #10B981;
+  font-size: 1rem;
+}
+
+.achievement-desc {
+  color: #94A3B8;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.achievement-points {
+  color: #FBBF24;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .leaderboard-table {
+    font-size: 0.875rem;
+  }
+  
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 0.75rem 0.5rem;
+  }
+}
