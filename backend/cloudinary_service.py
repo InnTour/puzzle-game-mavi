@@ -117,13 +117,13 @@ def generate_puzzle_pieces(public_id: str, image_width: int, image_height: int, 
             y = row * piece_height
             
             # Generate transformation URL with:
-            # 1. First resize to standard size
+            # 1. First resize to standard size (1260x840)
             # 2. Then crop to exact piece
             piece_url = cloudinary.CloudinaryImage(public_id).build_url(
                 transformation=[
                     {
-                        "width": STANDARD_SIZE,
-                        "height": STANDARD_SIZE,
+                        "width": STANDARD_WIDTH,
+                        "height": STANDARD_HEIGHT,
                         "crop": "fill",
                         "gravity": "auto"
                     },
