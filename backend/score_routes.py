@@ -185,3 +185,40 @@ async def get_puzzle_leaderboard(
         })
     
     return leaderboard
+
+
+# Admin routes for score management
+@router.delete("/admin/{score_id}")
+async def delete_score(
+    score_id: str,
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Admin: Delete a score (for fraudulent entries)
+    """
+    result = await db.scores.delete_one({"id": score_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Score not found")
+    
+    return {"success": True, "message": "Score deleted"}
+
+
+@router.post("/admin/{score_id}/flag")
+async def flag_score(
+    score_id: str,
+    reason: str,
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """
+    Admin: Flag a score as suspicious
+    """
+    result = await db.scores.update_one(
+        {"id": score_id},
+        {"$set": {"is_validated": False, "flag_reason": reason}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Score not found")
+    
+    return {"success": True, "message": "Score flagged"}
