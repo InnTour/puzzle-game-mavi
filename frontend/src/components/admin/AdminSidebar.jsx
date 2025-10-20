@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Upload, Library, LogOut, Home } from 'lucide-react';
+import { LayoutDashboard, Upload, Library, Trophy, Users, LogOut, Home } from 'lucide-react';
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -45,6 +45,24 @@ const AdminSidebar = () => {
         >
           <Library className="w-5 h-5" />
           <span>Puzzle Library</span>
+        </NavLink>
+
+        <NavLink
+          to="/admin/leaderboard"
+          className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+          data-testid="nav-leaderboard"
+        >
+          <Trophy className="w-5 h-5" />
+          <span>Leaderboard</span>
+        </NavLink>
+
+        <NavLink
+          to="/admin/users"
+          className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+          data-testid="nav-users"
+        >
+          <Users className="w-5 h-5" />
+          <span>Users</span>
         </NavLink>
 
         <div className="admin-nav-divider"></div>
