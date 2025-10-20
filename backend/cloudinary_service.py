@@ -142,21 +142,6 @@ def generate_puzzle_pieces(public_id: str, image_width: int, image_height: int, 
             piece_urls.append(piece_url)
     
     return piece_urls
-                        "y": y,
-                        "width": current_width,
-                        "height": current_height
-                    },
-                    {
-                        "quality": "auto:best",
-                        "format": "auto",
-                        "gravity": "auto"
-                    }
-                ]
-            )
-            
-            piece_urls.append(piece_url)
-    
-    return piece_urls
 
 
 def generate_all_difficulty_pieces(public_id: str, image_width: int, image_height: int) -> Dict[str, List[str]]:
