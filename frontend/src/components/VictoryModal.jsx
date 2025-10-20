@@ -90,7 +90,34 @@ const VictoryModal = ({ puzzle, difficulty, timer, moves, score, onPlayAgain, on
           <p className="text-slate-400">
             Difficulty: <span className="text-cyan-400 font-semibold">{difficulty.toUpperCase()}</span>
           </p>
+          {rank && (
+            <p className="text-slate-400 mt-2">
+              Your Rank: <span className="text-yellow-400 font-semibold text-xl">#{rank}</span>
+            </p>
+          )}
         </div>
+
+        {/* Achievements */}
+        {achievements.length > 0 && (
+          <div className="achievements-section">
+            <h3 className="text-cyan-400 font-semibold text-lg mb-3 flex items-center gap-2">
+              <Award className="w-5 h-5" />
+              Achievements Unlocked!
+            </h3>
+            <div className="achievements-grid">
+              {achievements.map((achievement) => (
+                <div key={achievement.id} className="achievement-card">
+                  <span className="achievement-icon">{achievement.icon}</span>
+                  <div>
+                    <p className="achievement-name">{achievement.name}</p>
+                    <p className="achievement-desc">{achievement.description}</p>
+                    <p className="achievement-points">+{achievement.points} pts</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Actions */}
         <div className="victory-actions">
