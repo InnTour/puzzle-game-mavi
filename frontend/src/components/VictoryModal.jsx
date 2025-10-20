@@ -1,8 +1,44 @@
-import React from 'react';
-import { Sparkles, Trophy, Clock, Hash } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Sparkles, Trophy, Clock, Hash, Award } from 'lucide-react';
 import { formatTime } from '../utils/gameLogic';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const VictoryModal = ({ puzzle, difficulty, timer, moves, score, onPlayAgain, onNewPuzzle }) => {
+  const [submitted, setSubmitted] = useState(false);
+  const [rank, setRank] = useState(null);
+  const [achievements, setAchievements] = useState([]);
+
+  useEffect(() => {
+    submitScore();
+  }, []);
+
+  const submitScore = async () => {
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/scores`, {
+        puzzle_id: puzzle.id,
+        completion_time: timer,
+        moves: moves,
+        difficulty: difficulty
+      });
+
+      setSubmitted(true);
+
+      // Load achievements
+      const achievementsResponse = await axios.get(`${BACKEND_URL}/api/scores/achievements?completion_time=${timer}&moves=${moves}&difficulty=${difficulty}&score=${score}`);
+      setAchievements(achievementsResponse.data || []);
+
+      // Get user rank (simplified for guest)
+      const leaderboardResponse = await axios.get(`${BACKEND_URL}/api/scores/puzzle/${puzzle.id}?difficulty=${difficulty}`);
+      const userRank = leaderboardResponse.data.findIndex(entry => entry.score <= score) + 1;
+      setRank(userRank || leaderboardResponse.data.length + 1);
+    } catch (error) {
+      console.error('Failed to submit score:', error);
+      setSubmitted(false);
+    }
+  };
+
   return (
     <div className="victory-modal-overlay" data-testid="victory-modal">
       <div className="victory-modal">
