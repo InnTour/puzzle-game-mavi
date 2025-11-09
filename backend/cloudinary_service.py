@@ -31,7 +31,7 @@ def configure_cloudinary():
 
 async def upload_puzzle_image(file: UploadFile) -> Dict:
     """
-    Upload puzzle image to Cloudinary
+    Upload puzzle image to Cloudinary with automatic compression for large files
     Returns: dict with public_id, url, width, height, format
     """
     try:
@@ -41,6 +41,36 @@ async def upload_puzzle_image(file: UploadFile) -> Dict:
         
         # Read file contents
         contents = await file.read()
+        
+        # Check file size and compress if necessary
+        MAX_SIZE_MB = 10  # Cloudinary free tier limit: 10MB for optimal performance
+        file_size_mb = len(contents) / (1024 * 1024)
+        
+        if file_size_mb > MAX_SIZE_MB:
+            # Compress/resize image using PIL
+            img = Image.open(io.BytesIO(contents))
+            
+            # Convert RGBA to RGB if necessary
+            if img.mode in ('RGBA', 'LA', 'P'):
+                background = Image.new('RGB', img.size, (255, 255, 255))
+                if img.mode == 'P':
+                    img = img.convert('RGBA')
+                background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                img = background
+            
+            # Resize to reasonable dimensions (max 4000px on longest side)
+            MAX_DIMENSION = 4000
+            if max(img.size) > MAX_DIMENSION:
+                ratio = MAX_DIMENSION / max(img.size)
+                new_size = tuple(int(dim * ratio) for dim in img.size)
+                img = img.resize(new_size, Image.Resampling.LANCZOS)
+            
+            # Compress to JPEG with high quality
+            output = io.BytesIO()
+            img.save(output, format='JPEG', quality=85, optimize=True)
+            contents = output.getvalue()
+            
+            print(f"Image compressed: {file_size_mb:.2f}MB → {len(contents)/(1024*1024):.2f}MB")
         
         # Upload to Cloudinary with optimized settings
         result = cloudinary.uploader.upload(
