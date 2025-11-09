@@ -5,6 +5,8 @@ from typing import Dict, List, Tuple
 import os
 import math
 from fastapi import UploadFile, HTTPException
+from PIL import Image
+import io
 
 # Grid configurations
 GRID_CONFIG = {
