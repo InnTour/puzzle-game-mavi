@@ -1385,7 +1385,17 @@ h1, h2, h3 {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(232, 223, 208, 0.6);
+  background: linear-gradient(135deg, rgba(232, 223, 208, 0.6) 0%, rgba(196, 165, 116, 0.2) 100%);
+  animation: pulse-placeholder 2s ease-in-out infinite;
+}
+
+@keyframes pulse-placeholder {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 /* ============ LEADERBOARD STYLES ============ */
