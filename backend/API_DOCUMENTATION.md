@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-Production: https://dragpuzzle.preview.emergentagent.com/api
+Production: https://pixelgrid-8.preview.emergentagent.com/api
 Local: http://localhost:8001/api
 ```
 
