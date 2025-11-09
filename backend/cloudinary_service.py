@@ -103,7 +103,7 @@ def generate_thumbnail_url(public_id: str, width: int = 300, height: int = 225) 
         crop="fill",
         gravity="auto",
         quality="auto:best",
-        format="auto"
+        fetch_format="auto"
     )
 
 
