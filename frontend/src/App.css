@@ -372,18 +372,27 @@ h1, h2, h3 {
 
 .puzzle-card-button {
   width: 100%;
-  padding: 10px;
-  background: rgba(107, 142, 111, 0.1);
-  border: 2px solid rgba(107, 142, 111, 0.3);
-  border-radius: 10px;
-  color: #6B8E6F;
+  padding: 14px;
+  background: linear-gradient(135deg, #6B8E6F, #7FA783);
+  border: none;
+  border-radius: 14px;
+  color: #F5F1E8;
   font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(107, 142, 111, 0.2);
+  letter-spacing: 0.01em;
 }
 
 .puzzle-card-button:hover {
-  background: rgba(107, 142, 111, 0.2);
+  background: linear-gradient(135deg, #7FA783, #6B8E6F);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(107, 142, 111, 0.35);
+}
+
+.puzzle-card-button:active {
+  transform: translateY(0);
 }
 
 /* SETUP */
