@@ -103,34 +103,41 @@ const PuzzleGallery = () => {
   }
 
   return (
-    <div className="puzzle-gallery" data-testid="puzzle-gallery">
-      {/* Header */}
-      <header className="gallery-header">
-        <div className="flex items-center gap-3">
-          <Puzzle className="w-8 h-8 text-[#C4A574]" />
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#C4A574]">Photo Puzzle</h1>
-            <p className="text-[#A89B8C] text-sm md:text-base">Choose a puzzle to start playing</p>
+    <div className="puzzle-gallery-modern" data-testid="puzzle-gallery">
+      {/* Modern Hero Section */}
+      <header className="modern-hero">
+        <div className="hero-content">
+          <div className="hero-icon-wrapper">
+            <Puzzle className="hero-icon" />
           </div>
+          <h1 className="hero-title">
+            MAVI Puzzle
+          </h1>
+          <p className="hero-subtitle">
+            Esplora la storia attraverso il gioco • {puzzles.length} {puzzles.length === 1 ? 'puzzle disponibile' : 'puzzle disponibili'}
+          </p>
         </div>
       </header>
 
-      {/* Puzzle Grid */}
-      <div className="puzzle-grid">
-        {puzzles.length === 0 ? (
-          <div className="empty-state">
-            <Puzzle className="w-16 h-16 text-[#8B7355]" />
-            <p className="text-[#A89B8C] mt-4">No puzzles available yet</p>
-          </div>
-        ) : (
-          puzzles.map((puzzle) => (
-            <PuzzleCard
-              key={puzzle.id}
-              puzzle={puzzle}
-              onClick={handlePuzzleClick}
-            />
-          ))
-        )}
+      {/* Modern Puzzle Grid */}
+      <div className="modern-grid-container">
+        <div className="modern-puzzle-grid">
+          {puzzles.length === 0 ? (
+            <div className="modern-empty-state">
+              <Puzzle className="w-20 h-20 text-[#C4A574] opacity-50" />
+              <p className="text-[#A89B8C] mt-6 text-lg">Nessun puzzle disponibile</p>
+              <p className="text-[#A89B8C] text-sm mt-2">Carica il primo puzzle dall'admin panel</p>
+            </div>
+          ) : (
+            puzzles.map((puzzle) => (
+              <PuzzleCard
+                key={puzzle.id}
+                puzzle={puzzle}
+                onClick={handlePuzzleClick}
+              />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
