@@ -116,21 +116,21 @@ const AdminUpload = () => {
         <div className="admin-content">
           <div className="upload-success-card" data-testid="upload-success">
             <CheckCircle className="w-16 h-16 text-emerald-400 mx-auto" />
-            <h2 className="text-2xl font-bold text-cyan-400 mt-4">Puzzle Uploaded Successfully!</h2>
+            <h2 className="text-2xl font-bold text-[#C4A574] mt-4">Puzzle Uploaded Successfully!</h2>
             
             <div className="success-details">
               <img src={uploadedPuzzle.thumbnail_url} alt={uploadedPuzzle.title} className="success-thumbnail" />
-              <h3 className="text-xl text-cyan-300 mt-4">{uploadedPuzzle.title}</h3>
-              <p className="text-slate-400">{uploadedPuzzle.description}</p>
+              <h3 className="text-xl text-[#6B8E6F] mt-4">{uploadedPuzzle.title}</h3>
+              <p className="text-[#A89B8C]">{uploadedPuzzle.description}</p>
               
               <div className="success-stats">
                 <div className="stat-item">
-                  <p className="text-slate-400">Puzzle ID</p>
-                  <p className="text-cyan-300 font-mono text-sm">{uploadedPuzzle.id.substring(0, 8)}...</p>
+                  <p className="text-[#A89B8C]">Puzzle ID</p>
+                  <p className="text-[#6B8E6F] font-mono text-sm">{uploadedPuzzle.id.substring(0, 8)}...</p>
                 </div>
                 <div className="stat-item">
-                  <p className="text-slate-400">Pieces Generated</p>
-                  <p className="text-cyan-300">Easy: {uploadedPuzzle.piece_data.easy.length}, Medium: {uploadedPuzzle.piece_data.medium.length}</p>
+                  <p className="text-[#A89B8C]">Pieces Generated</p>
+                  <p className="text-[#6B8E6F]">Easy: {uploadedPuzzle.piece_data.easy.length}, Medium: {uploadedPuzzle.piece_data.medium.length}</p>
                 </div>
               </div>
             </div>
@@ -155,8 +155,8 @@ const AdminUpload = () => {
       
       <div className="admin-content">
         <header className="admin-header">
-          <h1 className="text-3xl font-bold text-cyan-400">Upload New Puzzle</h1>
-          <p className="text-slate-400 mt-1">Add a new puzzle to MAVI collection</p>
+          <h1 className="text-3xl font-bold text-[#C4A574]">Upload New Puzzle</h1>
+          <p className="text-[#A89B8C] mt-1">Add a new puzzle to MAVI collection</p>
         </header>
 
         <form onSubmit={handleSubmit} className="admin-upload-form">

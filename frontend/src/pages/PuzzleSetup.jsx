@@ -15,7 +15,7 @@ const DifficultyButton = ({ difficulty, config, selected, onClick }) => {
     >
       <div className="difficulty-icon">{config.label}</div>
       <div className="difficulty-info">
-        <span className="text-sm text-slate-400">{config.pieces} pieces</span>
+        <span className="text-sm text-[#A89B8C]">{config.pieces} pieces</span>
       </div>
     </button>
   );
@@ -59,7 +59,7 @@ const PuzzleSetup = () => {
     return (
       <div className="loading-screen">
         <div className="loading-spinner"></div>
-        <p className="text-cyan-400 mt-4">Loading puzzle...</p>
+        <p className="text-[#C4A574] mt-4">Loading puzzle...</p>
       </div>
     );
   }
@@ -102,16 +102,16 @@ const PuzzleSetup = () => {
         {/* Puzzle Info & Difficulty Selection */}
         <div className="puzzle-info-panel">
           <div className="puzzle-info">
-            <h1 className="text-2xl md:text-3xl font-bold text-cyan-400">{puzzle.title}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#C4A574]">{puzzle.title}</h1>
             {puzzle.description && (
-              <p className="text-slate-300 mt-2">{puzzle.description}</p>
+              <p className="text-[#8B7355] mt-2">{puzzle.description}</p>
             )}
             <div className="flex items-center gap-2 mt-4">
-              <span className="px-3 py-1 bg-cyan-500/20 text-cyan-300 text-sm font-semibold rounded-full border border-cyan-500/30">
+              <span className="px-3 py-1 bg-[#6B8E6F]/20 text-[#6B8E6F] text-sm font-semibold rounded-full border border-cyan-500/30">
                 {puzzle.category}
               </span>
               {puzzle.tags && puzzle.tags.map((tag, idx) => (
-                <span key={idx} className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-full">
+                <span key={idx} className="px-2 py-1 bg-slate-700 text-[#8B7355] text-xs rounded-full">
                   {tag}
                 </span>
               ))}
@@ -119,7 +119,7 @@ const PuzzleSetup = () => {
           </div>
 
           <div className="difficulty-selection">
-            <h2 className="text-xl font-semibold text-cyan-400 mb-4">Select Difficulty</h2>
+            <h2 className="text-xl font-semibold text-[#C4A574] mb-4">Select Difficulty</h2>
             <div className="difficulty-grid">
               {Object.entries(GRID_CONFIG)
                 .filter(([key]) => puzzle.difficulty_available.includes(key))

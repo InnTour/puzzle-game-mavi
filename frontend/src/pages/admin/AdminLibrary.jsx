@@ -81,7 +81,7 @@ const AdminLibrary = () => {
         <div className="admin-content">
           <div className="loading-screen">
             <div className="loading-spinner"></div>
-            <p className="text-cyan-400 mt-4">Loading library...</p>
+            <p className="text-[#C4A574] mt-4">Loading library...</p>
           </div>
         </div>
       </div>
@@ -95,8 +95,8 @@ const AdminLibrary = () => {
       <div className="admin-content">
         <header className="admin-header">
           <div>
-            <h1 className="text-3xl font-bold text-cyan-400">Puzzle Library</h1>
-            <p className="text-slate-400 mt-1">{puzzles.length} total puzzles</p>
+            <h1 className="text-3xl font-bold text-[#C4A574]">Puzzle Library</h1>
+            <p className="text-[#A89B8C] mt-1">{puzzles.length} total puzzles</p>
           </div>
           <button
             onClick={() => navigate('/admin/upload')}
@@ -109,7 +109,7 @@ const AdminLibrary = () => {
 
         <div className="admin-filters">
           <div className="filter-search">
-            <Search className="w-5 h-5 text-slate-400" />
+            <Search className="w-5 h-5 text-[#A89B8C]" />
             <input
               type="text"
               value={searchTerm}
@@ -149,7 +149,7 @@ const AdminLibrary = () => {
 
         {filteredPuzzles.length === 0 ? (
           <div className="empty-state">
-            <p className="text-slate-400">No puzzles found</p>
+            <p className="text-[#A89B8C]">No puzzles found</p>
           </div>
         ) : (
           <div className="admin-table-container">
@@ -181,8 +181,8 @@ const AdminLibrary = () => {
                     </td>
                     <td>
                       <div className="table-title">
-                        <p className="font-semibold text-cyan-300">{puzzle.title}</p>
-                        <p className="text-slate-400 text-sm truncate max-w-xs">{puzzle.description}</p>
+                        <p className="font-semibold text-[#6B8E6F]">{puzzle.title}</p>
+                        <p className="text-[#A89B8C] text-sm truncate max-w-xs">{puzzle.description}</p>
                       </div>
                     </td>
                     <td>
@@ -193,7 +193,7 @@ const AdminLibrary = () => {
                         {puzzle.status}
                       </span>
                     </td>
-                    <td className="text-slate-300">{puzzle.metadata?.total_plays || 0}</td>
+                    <td className="text-[#8B7355]">{puzzle.metadata?.total_plays || 0}</td>
                     <td>
                       {puzzle.is_featured && (
                         <span className="table-badge-featured">Featured</span>

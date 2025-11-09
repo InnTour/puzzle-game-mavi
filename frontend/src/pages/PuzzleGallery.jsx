@@ -25,7 +25,7 @@ const PuzzleCard = ({ puzzle, onClick }) => {
           />
         ) : (
           <div className="puzzle-placeholder">
-            <Puzzle className="w-16 h-16 text-slate-600" />
+            <Puzzle className="w-16 h-16 text-[#8B7355]" />
           </div>
         )}
         {puzzle.is_featured && (
@@ -41,7 +41,7 @@ const PuzzleCard = ({ puzzle, onClick }) => {
         
         <div className="puzzle-card-meta">
           <span className="puzzle-card-category">{puzzle.category}</span>
-          <div className="flex items-center gap-1 text-slate-400 text-xs">
+          <div className="flex items-center gap-1 text-[#A89B8C] text-xs">
             <Grid3x3 className="w-3 h-3" />
             <span>{puzzle.metadata.total_plays || 0} plays</span>
           </div>
@@ -86,7 +86,7 @@ const PuzzleGallery = () => {
     return (
       <div className="loading-screen">
         <div className="loading-spinner"></div>
-        <p className="text-cyan-400 mt-4">Loading puzzles...</p>
+        <p className="text-[#C4A574] mt-4">Loading puzzles...</p>
       </div>
     );
   }
@@ -107,10 +107,10 @@ const PuzzleGallery = () => {
       {/* Header */}
       <header className="gallery-header">
         <div className="flex items-center gap-3">
-          <Puzzle className="w-8 h-8 text-cyan-400" />
+          <Puzzle className="w-8 h-8 text-[#C4A574]" />
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-cyan-400">Photo Puzzle</h1>
-            <p className="text-slate-400 text-sm md:text-base">Choose a puzzle to start playing</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-[#C4A574]">Photo Puzzle</h1>
+            <p className="text-[#A89B8C] text-sm md:text-base">Choose a puzzle to start playing</p>
           </div>
         </div>
       </header>
@@ -119,8 +119,8 @@ const PuzzleGallery = () => {
       <div className="puzzle-grid">
         {puzzles.length === 0 ? (
           <div className="empty-state">
-            <Puzzle className="w-16 h-16 text-slate-600" />
-            <p className="text-slate-400 mt-4">No puzzles available yet</p>
+            <Puzzle className="w-16 h-16 text-[#8B7355]" />
+            <p className="text-[#A89B8C] mt-4">No puzzles available yet</p>
           </div>
         ) : (
           puzzles.map((puzzle) => (

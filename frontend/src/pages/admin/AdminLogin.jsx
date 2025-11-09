@@ -24,9 +24,9 @@ const AdminLogin = () => {
     <div className="admin-login-screen" data-testid="admin-login">
       <div className="admin-login-card">
         <div className="admin-login-header">
-          <Lock className="w-12 h-12 text-cyan-400" />
-          <h1 className="text-3xl font-bold text-cyan-400 mt-4">MAVI Admin Panel</h1>
-          <p className="text-slate-400 mt-2">Login to manage puzzles</p>
+          <Lock className="w-12 h-12 text-[#C4A574]" />
+          <h1 className="text-3xl font-bold text-[#C4A574] mt-4">MAVI Admin Panel</h1>
+          <p className="text-[#A89B8C] mt-2">Login to manage puzzles</p>
         </div>
 
         <form onSubmit={handleLogin} className="admin-login-form">
@@ -74,8 +74,8 @@ const AdminLogin = () => {
         </form>
 
         <div className="admin-login-footer">
-          <p className="text-slate-500 text-sm">MVP Credentials:</p>
-          <p className="text-slate-400 text-xs">admin@mavi.com / mavi2025</p>
+          <p className="text-[#A89B8C] text-sm">MVP Credentials:</p>
+          <p className="text-[#A89B8C] text-xs">admin@mavi.com / mavi2025</p>
         </div>
       </div>
     </div>

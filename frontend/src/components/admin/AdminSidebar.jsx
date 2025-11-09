@@ -15,8 +15,8 @@ const AdminSidebar = () => {
   return (
     <aside className="admin-sidebar" data-testid="admin-sidebar">
       <div className="admin-sidebar-header">
-        <h2 className="text-xl font-bold text-cyan-400">MAVI Admin</h2>
-        <p className="text-slate-400 text-sm">Puzzle Management</p>
+        <h2 className="text-xl font-bold text-[#C4A574]">MAVI Admin</h2>
+        <p className="text-[#A89B8C] text-sm">Puzzle Management</p>
       </div>
 
       <nav className="admin-sidebar-nav">

@@ -94,7 +94,7 @@ const GameScreen = () => {
     return (
       <div className="loading-screen">
         <div className="loading-spinner"></div>
-        <p className="text-cyan-400 mt-4">Loading game...</p>
+        <p className="text-[#C4A574] mt-4">Loading game...</p>
       </div>
     );
   }

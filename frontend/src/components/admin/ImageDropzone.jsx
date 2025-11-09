@@ -75,8 +75,8 @@ const ImageDropzone = ({ onFileSelect, selectedFile }) => {
             </button>
           </div>
           <div className="image-file-info">
-            <p className="text-cyan-300 font-semibold">{selectedFile?.name}</p>
-            <p className="text-slate-400 text-sm">
+            <p className="text-[#6B8E6F] font-semibold">{selectedFile?.name}</p>
+            <p className="text-[#A89B8C] text-sm">
               {(selectedFile?.size / 1024 / 1024).toFixed(2)} MB
             </p>
           </div>
@@ -100,15 +100,15 @@ const ImageDropzone = ({ onFileSelect, selectedFile }) => {
           <label htmlFor="file-upload" className="dropzone-label">
             {dragActive ? (
               <>
-                <Upload className="w-12 h-12 text-cyan-400 animate-bounce" />
-                <p className="text-cyan-400 font-semibold">Drop image here</p>
+                <Upload className="w-12 h-12 text-[#C4A574] animate-bounce" />
+                <p className="text-[#C4A574] font-semibold">Drop image here</p>
               </>
             ) : (
               <>
-                <Image className="w-12 h-12 text-slate-400" />
-                <p className="text-cyan-300 font-semibold mt-4">Drag & drop image here</p>
-                <p className="text-slate-400 text-sm mt-2">or click to browse</p>
-                <p className="text-slate-500 text-xs mt-4">
+                <Image className="w-12 h-12 text-[#A89B8C]" />
+                <p className="text-[#6B8E6F] font-semibold mt-4">Drag & drop image here</p>
+                <p className="text-[#A89B8C] text-sm mt-2">or click to browse</p>
+                <p className="text-[#A89B8C] text-xs mt-4">
                   Supports: JPG, PNG, WebP (Max 10MB)
                 </p>
               </>

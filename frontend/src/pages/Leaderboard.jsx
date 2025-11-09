@@ -49,26 +49,26 @@ const Leaderboard = () => {
     if (rank === 1) return { icon: '🥇', color: 'text-yellow-400' };
     if (rank === 2) return { icon: '🥈', color: 'text-gray-300' };
     if (rank === 3) return { icon: '🥉', color: 'text-amber-600' };
-    return { icon: rank, color: 'text-slate-400' };
+    return { icon: rank, color: 'text-[#A89B8C]' };
   };
 
   const getDifficultyColor = (difficulty) => {
     const colors = {
       beginner: 'bg-green-500/20 text-green-300 border-green-500/30',
-      easy: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+      easy: 'bg-[#6B8E6F]/20 text-blue-300 border-blue-500/30',
       medium: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
       hard: 'bg-orange-500/20 text-orange-300 border-orange-500/30',
       expert: 'bg-red-500/20 text-red-300 border-red-500/30',
       master: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
     };
-    return colors[difficulty] || 'bg-slate-500/20 text-slate-300';
+    return colors[difficulty] || 'bg-slate-500/20 text-[#8B7355]';
   };
 
   if (loading) {
     return (
       <div className="loading-screen">
         <div className="loading-spinner"></div>
-        <p className="text-cyan-400 mt-4">Loading leaderboard...</p>
+        <p className="text-[#C4A574] mt-4">Loading leaderboard...</p>
       </div>
     );
   }
@@ -89,8 +89,8 @@ const Leaderboard = () => {
         <div className="leaderboard-title-section">
           <Trophy className="w-10 h-10 text-yellow-400" />
           <div>
-            <h1 className="text-4xl font-bold text-cyan-400">Global Leaderboard</h1>
-            <p className="text-slate-400 mt-1">Top players worldwide</p>
+            <h1 className="text-4xl font-bold text-[#C4A574]">Global Leaderboard</h1>
+            <p className="text-[#A89B8C] mt-1">Top players worldwide</p>
           </div>
         </div>
       </header>
@@ -98,8 +98,8 @@ const Leaderboard = () => {
       {/* Filters */}
       <div className="leaderboard-filters">
         <div className="filter-group">
-          <Filter className="w-5 h-5 text-slate-400" />
-          <label className="text-slate-400 text-sm">Difficulty:</label>
+          <Filter className="w-5 h-5 text-[#A89B8C]" />
+          <label className="text-[#A89B8C] text-sm">Difficulty:</label>
           <select
             value={filters.difficulty}
             onChange={(e) => setFilters(prev => ({ ...prev, difficulty: e.target.value }))}
@@ -117,7 +117,7 @@ const Leaderboard = () => {
         </div>
 
         <div className="filter-group">
-          <label className="text-slate-400 text-sm">Timeframe:</label>
+          <label className="text-[#A89B8C] text-sm">Timeframe:</label>
           <select
             value={filters.timeframe}
             onChange={(e) => setFilters(prev => ({ ...prev, timeframe: e.target.value }))}
@@ -136,8 +136,8 @@ const Leaderboard = () => {
       <div className="leaderboard-container">
         {leaderboard.length === 0 ? (
           <div className="empty-state">
-            <Trophy className="w-16 h-16 text-slate-600" />
-            <p className="text-slate-400 mt-4">No scores yet. Be the first!</p>
+            <Trophy className="w-16 h-16 text-[#8B7355]" />
+            <p className="text-[#A89B8C] mt-4">No scores yet. Be the first!</p>
           </div>
         ) : (
           <div className="leaderboard-table-wrapper">
@@ -194,13 +194,13 @@ const Leaderboard = () => {
                       </td>
                       <td>
                         <div className="stat-cell">
-                          <Clock className="w-4 h-4 text-cyan-400" />
+                          <Clock className="w-4 h-4 text-[#C4A574]" />
                           <span>{formatTime(entry.completion_time)}</span>
                         </div>
                       </td>
                       <td>
                         <div className="stat-cell">
-                          <Hash className="w-4 h-4 text-cyan-400" />
+                          <Hash className="w-4 h-4 text-[#C4A574]" />
                           <span>{entry.moves}</span>
                         </div>
                       </td>

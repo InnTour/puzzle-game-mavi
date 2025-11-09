@@ -7,10 +7,10 @@ const PieceTray = ({ pieces, draggedPiece, onPointerDown }) => {
   return (
     <div className="piece-tray-container" data-testid="piece-tray">
       <div className="piece-tray-header">
-        <h3 className="text-cyan-400 font-semibold text-sm md:text-base">
+        <h3 className="text-[#C4A574] font-semibold text-sm md:text-base">
           Puzzle Pieces
         </h3>
-        <span className="text-slate-400 text-xs md:text-sm">
+        <span className="text-[#A89B8C] text-xs md:text-sm">
           {unplacedPieces.length} remaining
         </span>
       </div>

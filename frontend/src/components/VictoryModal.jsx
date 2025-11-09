@@ -47,7 +47,7 @@ const VictoryModal = ({ puzzle, difficulty, timer, moves, score, onPlayAgain, on
         {/* Confetti effect would go here */}
         <div className="victory-header">
           <Sparkles className="w-12 h-12 text-yellow-400 animate-pulse" />
-          <h2 className="text-3xl md:text-4xl font-bold text-cyan-400 mt-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#C4A574] mt-4">
             Puzzle Complete!
           </h2>
         </div>
@@ -64,36 +64,36 @@ const VictoryModal = ({ puzzle, difficulty, timer, moves, score, onPlayAgain, on
         {/* Statistics */}
         <div className="victory-stats">
           <div className="stat-card">
-            <Clock className="w-6 h-6 text-cyan-400" />
+            <Clock className="w-6 h-6 text-[#C4A574]" />
             <div>
-              <p className="text-slate-400 text-sm">Time</p>
-              <p className="text-2xl font-bold text-cyan-300">{formatTime(timer)}</p>
+              <p className="text-[#A89B8C] text-sm">Time</p>
+              <p className="text-2xl font-bold text-[#6B8E6F]">{formatTime(timer)}</p>
             </div>
           </div>
 
           <div className="stat-card">
-            <Hash className="w-6 h-6 text-cyan-400" />
+            <Hash className="w-6 h-6 text-[#C4A574]" />
             <div>
-              <p className="text-slate-400 text-sm">Moves</p>
-              <p className="text-2xl font-bold text-cyan-300">{moves}</p>
+              <p className="text-[#A89B8C] text-sm">Moves</p>
+              <p className="text-2xl font-bold text-[#6B8E6F]">{moves}</p>
             </div>
           </div>
 
           <div className="stat-card">
             <Trophy className="w-6 h-6 text-yellow-400" />
             <div>
-              <p className="text-slate-400 text-sm">Score</p>
+              <p className="text-[#A89B8C] text-sm">Score</p>
               <p className="text-2xl font-bold text-yellow-400">{score.toLocaleString()}</p>
             </div>
           </div>
         </div>
 
         <div className="stat-info">
-          <p className="text-slate-400">
-            Difficulty: <span className="text-cyan-400 font-semibold">{difficulty.toUpperCase()}</span>
+          <p className="text-[#A89B8C]">
+            Difficulty: <span className="text-[#C4A574] font-semibold">{difficulty.toUpperCase()}</span>
           </p>
           {rank && (
-            <p className="text-slate-400 mt-2">
+            <p className="text-[#A89B8C] mt-2">
               Your Rank: <span className="text-yellow-400 font-semibold text-xl">#{rank}</span>
             </p>
           )}
@@ -102,7 +102,7 @@ const VictoryModal = ({ puzzle, difficulty, timer, moves, score, onPlayAgain, on
         {/* Achievements */}
         {achievements.length > 0 && (
           <div className="achievements-section">
-            <h3 className="text-cyan-400 font-semibold text-lg mb-3 flex items-center gap-2">
+            <h3 className="text-[#C4A574] font-semibold text-lg mb-3 flex items-center gap-2">
               <Award className="w-5 h-5" />
               Achievements Unlocked!
             </h3>

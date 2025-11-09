@@ -8,10 +8,10 @@ const GameHeader = ({ puzzleTitle, difficulty, timer, moves, onRestart, onQuit }
       <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-3">
         {/* Left: Puzzle Info */}
         <div className="flex items-center gap-3">
-          <h1 className="text-lg md:text-xl font-bold text-cyan-400 truncate max-w-[200px] md:max-w-none">
+          <h1 className="text-lg md:text-xl font-bold text-[#C4A574] truncate max-w-[200px] md:max-w-none">
             {puzzleTitle}
           </h1>
-          <span className="px-2 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-semibold rounded-full border border-cyan-500/30">
+          <span className="px-2 py-1 bg-[#6B8E6F]/20 text-[#6B8E6F] text-xs font-semibold rounded-full border border-cyan-500/30">
             {difficulty.toUpperCase()}
           </span>
         </div>
@@ -19,14 +19,14 @@ const GameHeader = ({ puzzleTitle, difficulty, timer, moves, onRestart, onQuit }
         {/* Center: Stats */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 bg-slate-700/50 px-3 py-1.5 rounded-lg" data-testid="game-timer">
-            <Clock className="w-4 h-4 text-cyan-400" />
+            <Clock className="w-4 h-4 text-[#C4A574]" />
             <span className="font-mono text-cyan-100 font-semibold">
               {formatTime(timer)}
             </span>
           </div>
           
           <div className="flex items-center gap-2 bg-slate-700/50 px-3 py-1.5 rounded-lg" data-testid="move-counter">
-            <Hash className="w-4 h-4 text-cyan-400" />
+            <Hash className="w-4 h-4 text-[#C4A574]" />
             <span className="font-mono text-cyan-100 font-semibold">
               {moves}
             </span>
@@ -37,7 +37,7 @@ const GameHeader = ({ puzzleTitle, difficulty, timer, moves, onRestart, onQuit }
         <div className="flex items-center gap-2">
           <button
             onClick={onRestart}
-            className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-cyan-300 rounded-lg transition-all hover:scale-105"
+            className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-[#6B8E6F] rounded-lg transition-all hover:scale-105"
             data-testid="restart-button"
           >
             <RotateCcw className="w-4 h-4" />
@@ -46,7 +46,7 @@ const GameHeader = ({ puzzleTitle, difficulty, timer, moves, onRestart, onQuit }
           
           <button
             onClick={onQuit}
-            className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-cyan-300 rounded-lg transition-all hover:scale-105"
+            className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-[#6B8E6F] rounded-lg transition-all hover:scale-105"
             data-testid="quit-button"
           >
             <Home className="w-4 h-4" />

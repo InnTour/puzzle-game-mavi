@@ -86,7 +86,7 @@ const AdminUsers = () => {
         <div className="admin-content">
           <div className="loading-screen">
             <div className="loading-spinner"></div>
-            <p className="text-cyan-400 mt-4">Loading users...</p>
+            <p className="text-[#C4A574] mt-4">Loading users...</p>
           </div>
         </div>
       </div>
@@ -100,14 +100,14 @@ const AdminUsers = () => {
       <div className="admin-content">
         <header className="admin-header">
           <div>
-            <h1 className="text-3xl font-bold text-cyan-400">User Management</h1>
-            <p className="text-slate-400 mt-1">{users.length} total users</p>
+            <h1 className="text-3xl font-bold text-[#C4A574]">User Management</h1>
+            <p className="text-[#A89B8C] mt-1">{users.length} total users</p>
           </div>
         </header>
 
         <div className="admin-filters">
           <div className="filter-search">
-            <Search className="w-5 h-5 text-slate-400" />
+            <Search className="w-5 h-5 text-[#A89B8C]" />
             <input
               type="text"
               value={searchTerm}
@@ -142,15 +142,15 @@ const AdminUsers = () => {
         </div>
 
         <div className="admin-info-banner">
-          <p className="text-cyan-400">
+          <p className="text-[#C4A574]">
             📝 Note: Full user registration system coming soon. Currently showing guest player stats.
           </p>
         </div>
 
         {filteredUsers.length === 0 ? (
           <div className="empty-state">
-            <Users className="w-16 h-16 text-slate-600" />
-            <p className="text-slate-400 mt-4">No users found</p>
+            <Users className="w-16 h-16 text-[#8B7355]" />
+            <p className="text-[#A89B8C] mt-4">No users found</p>
           </div>
         ) : (
           <div className="admin-table-container">
@@ -170,16 +170,16 @@ const AdminUsers = () => {
                 {filteredUsers.map((user) => (
                   <tr key={user.id} data-testid={`user-row-${user.id}`}>
                     <td>
-                      <span className="font-semibold text-cyan-300">{user.username}</span>
+                      <span className="font-semibold text-[#6B8E6F]">{user.username}</span>
                     </td>
                     <td>
-                      <span className="text-slate-400 text-sm">{user.email || 'N/A'}</span>
+                      <span className="text-[#A89B8C] text-sm">{user.email || 'N/A'}</span>
                     </td>
                     <td>
                       <span className="table-badge">{user.role.toUpperCase()}</span>
                     </td>
                     <td>
-                      <span className="text-slate-300">{user.stats?.total_puzzles_completed || 0}</span>
+                      <span className="text-[#8B7355]">{user.stats?.total_puzzles_completed || 0}</span>
                     </td>
                     <td>
                       <span className={`table-status ${
@@ -189,7 +189,7 @@ const AdminUsers = () => {
                       </span>
                     </td>
                     <td>
-                      <span className="text-slate-400 text-xs">
+                      <span className="text-[#A89B8C] text-xs">
                         {new Date(user.created_at).toLocaleDateString()}
                       </span>
                     </td>

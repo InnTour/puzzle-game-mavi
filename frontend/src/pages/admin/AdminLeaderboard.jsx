@@ -108,7 +108,7 @@ const AdminLeaderboard = () => {
         <div className="admin-content">
           <div className="loading-screen">
             <div className="loading-spinner"></div>
-            <p className="text-cyan-400 mt-4">Loading leaderboard...</p>
+            <p className="text-[#C4A574] mt-4">Loading leaderboard...</p>
           </div>
         </div>
       </div>
@@ -122,8 +122,8 @@ const AdminLeaderboard = () => {
       <div className="admin-content">
         <header className="admin-header">
           <div>
-            <h1 className="text-3xl font-bold text-cyan-400">Leaderboard Management</h1>
-            <p className="text-slate-400 mt-1">{scores.length} total scores</p>
+            <h1 className="text-3xl font-bold text-[#C4A574]">Leaderboard Management</h1>
+            <p className="text-[#A89B8C] mt-1">{scores.length} total scores</p>
           </div>
           <button
             onClick={exportToCSV}
@@ -137,7 +137,7 @@ const AdminLeaderboard = () => {
 
         <div className="admin-filters">
           <div className="filter-search">
-            <Filter className="w-5 h-5 text-slate-400" />
+            <Filter className="w-5 h-5 text-[#A89B8C]" />
             <select
               value={filters.puzzle}
               onChange={(e) => setFilters(prev => ({ ...prev, puzzle: e.target.value }))}
@@ -181,8 +181,8 @@ const AdminLeaderboard = () => {
 
         {scores.length === 0 ? (
           <div className="empty-state">
-            <Trophy className="w-16 h-16 text-slate-600" />
-            <p className="text-slate-400 mt-4">No scores found</p>
+            <Trophy className="w-16 h-16 text-[#8B7355]" />
+            <p className="text-[#A89B8C] mt-4">No scores found</p>
           </div>
         ) : (
           <div className="admin-table-container">
@@ -204,13 +204,13 @@ const AdminLeaderboard = () => {
                 {scores.map((score) => (
                   <tr key={score.score_id} data-testid={`score-row-${score.score_id}`}>
                     <td>
-                      <span className="font-bold text-cyan-400">#{score.rank}</span>
+                      <span className="font-bold text-[#C4A574]">#{score.rank}</span>
                     </td>
                     <td>
-                      <span className="text-cyan-300">{score.user.username}</span>
+                      <span className="text-[#6B8E6F]">{score.user.username}</span>
                     </td>
                     <td>
-                      <span className="text-slate-300 text-sm">{score.puzzle?.title || 'Unknown'}</span>
+                      <span className="text-[#8B7355] text-sm">{score.puzzle?.title || 'Unknown'}</span>
                     </td>
                     <td>
                       <span className="table-badge">{score.difficulty.toUpperCase()}</span>
@@ -219,13 +219,13 @@ const AdminLeaderboard = () => {
                       <span className="font-bold text-yellow-400">{score.score.toLocaleString()}</span>
                     </td>
                     <td>
-                      <span className="text-slate-300">{formatTime(score.completion_time)}</span>
+                      <span className="text-[#8B7355]">{formatTime(score.completion_time)}</span>
                     </td>
                     <td>
-                      <span className="text-slate-300">{score.moves}</span>
+                      <span className="text-[#8B7355]">{score.moves}</span>
                     </td>
                     <td>
-                      <span className="text-slate-400 text-xs">
+                      <span className="text-[#A89B8C] text-xs">
                         {new Date(score.completed_at).toLocaleDateString()}
                       </span>
                     </td>
