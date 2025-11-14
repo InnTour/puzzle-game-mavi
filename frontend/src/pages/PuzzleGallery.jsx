@@ -107,8 +107,12 @@ const PuzzleGallery = () => {
       {/* Modern Hero Section */}
       <header className="modern-hero">
         <div className="hero-content">
-          <div className="hero-icon-wrapper">
-            <Puzzle className="hero-icon" />
+          <div className="hero-logo-wrapper">
+            <img 
+              src="/logo-mavi.png" 
+              alt="MAVI Logo" 
+              className="hero-logo"
+            />
           </div>
           <h1 className="hero-title">
             MAVI Puzzle
