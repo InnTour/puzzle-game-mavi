@@ -15,8 +15,13 @@ const AdminSidebar = () => {
   return (
     <aside className="admin-sidebar" data-testid="admin-sidebar">
       <div className="admin-sidebar-header">
-        <h2 className="text-xl font-bold text-[#C4A574]">MAVI Admin</h2>
-        <p className="text-[#A89B8C] text-sm">Puzzle Management</p>
+        <img 
+          src="/logo-mavi.png" 
+          alt="MAVI Logo" 
+          className="w-24 h-auto mx-auto mb-3"
+        />
+        <h2 className="text-xl font-bold text-[#C4A574] text-center">MAVI Admin</h2>
+        <p className="text-[#A89B8C] text-sm text-center">Puzzle Management</p>
       </div>
 
       <nav className="admin-sidebar-nav">
