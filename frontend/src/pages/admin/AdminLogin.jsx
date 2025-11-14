@@ -24,8 +24,12 @@ const AdminLogin = () => {
     <div className="admin-login-screen" data-testid="admin-login">
       <div className="admin-login-card">
         <div className="admin-login-header">
-          <Lock className="w-12 h-12 text-[#C4A574]" />
-          <h1 className="text-3xl font-bold text-[#C4A574] mt-4">MAVI Admin Panel</h1>
+          <img 
+            src="/logo-mavi.png" 
+            alt="MAVI Logo" 
+            className="w-32 h-auto mx-auto mb-4"
+          />
+          <h1 className="text-3xl font-bold text-[#C4A574]">MAVI Admin Panel</h1>
           <p className="text-[#A89B8C] mt-2">Login to manage puzzles</p>
         </div>
 
