@@ -1,0 +1,15 @@
+{
+  "short_name": "MAVI Puzzle",
+  "name": "MAVI Puzzle - Museo Antropologico Visivo Irpino",
+  "icons": [
+    {
+      "src": "logo-mavi.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#F5F1E8",
+  "background_color": "#F5F1E8"
+}
