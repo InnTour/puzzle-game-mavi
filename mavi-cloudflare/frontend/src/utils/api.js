@@ -141,18 +141,31 @@ const generateMockPieces = async (puzzleId, difficulty) => {
   const gridSizes = { easy: 4, medium: 6, hard: 8 };
   const gridSize = gridSizes[difficulty] || 4;
   
-  // Trova il puzzle
-  const puzzle = MOCK_PUZZLES.find(p => p.id === puzzleId);
+  // Trova il puzzle - prima cerca nell'admin, poi nei mock
+  const allPuzzles = loadPuzzlesFromAdmin();
+  const puzzle = allPuzzles.find(p => p.id === puzzleId);
+  
   if (!puzzle) {
+    console.error(`❌ Puzzle ${puzzleId} non trovato`);
     throw new Error('Puzzle not found');
   }
   
+  console.log('🧩 Puzzle trovato:', puzzle);
+  
   // Usa l'immagine originale
   const imageUrl = puzzle.original_image?.url || puzzle.image_url;
+  console.log('🖼️ URL immagine da tagliare:', imageUrl?.substring(0, 50) + '...');
+  
+  if (!imageUrl) {
+    console.error('❌ Nessuna immagine disponibile per questo puzzle');
+    throw new Error('No image URL available');
+  }
   
   try {
     // Taglia l'immagine in pezzi reali
+    console.log(`✂️ Inizio slicing in griglia ${gridSize}x${gridSize}...`);
     const pieces = await sliceImageIntoPieces(imageUrl, gridSize, gridSize);
+    console.log(`✅ Slicing completato: ${pieces.length} pezzi generati`);
     return { 
       puzzle_id: puzzleId, 
       difficulty, 
@@ -160,7 +173,7 @@ const generateMockPieces = async (puzzleId, difficulty) => {
       total: pieces.length 
     };
   } catch (error) {
-    console.error('Error generating pieces:', error);
+    console.error('❌ Error generating pieces:', error);
     // Fallback: placeholder pieces
     const totalPieces = gridSize * gridSize;
     const pieces = Array.from({ length: totalPieces }, (_, i) => 
@@ -174,14 +187,19 @@ const generateMockPieces = async (puzzleId, difficulty) => {
 const loadPuzzlesFromAdmin = () => {
   try {
     const stored = localStorage.getItem('mavi_admin_puzzles');
+    console.log('📦 Caricamento puzzles da localStorage...', stored ? 'TROVATO' : 'NON TROVATO');
+    
     if (stored) {
       const adminPuzzles = JSON.parse(stored);
+      console.log(`✅ ${adminPuzzles.length} puzzle caricati da admin:`, adminPuzzles);
+      
       if (adminPuzzles.length > 0) {
         return adminPuzzles;
       }
     }
+    console.log('⚠️ Nessun puzzle admin trovato, uso MOCK_PUZZLES');
   } catch (err) {
-    console.error('Error loading admin puzzles:', err);
+    console.error('❌ Error loading admin puzzles:', err);
   }
   // Fallback ai mock puzzles
   return MOCK_PUZZLES;
@@ -192,14 +210,19 @@ export const puzzleAPI = {
   // Get all puzzles
   getAll: async (filters = {}) => {
     if (USE_MOCK) {
+      console.log('🎮 API.getAll - Modalità MOCK attiva');
       await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
       
       // Carica puzzles da admin o mock
       const allPuzzles = loadPuzzlesFromAdmin();
+      console.log(`🔍 Filtro status: ${filters.status || 'NESSUNO'}`);
       const filtered = allPuzzles.filter(p => !filters.status || p.status === filters.status);
+      console.log(`✅ ${filtered.length} puzzle filtrati da visualizzare`);
       
       // Genera immagini al volo se necessario
-      return filtered.map(p => generatePuzzleImages(p));
+      const result = filtered.map(p => generatePuzzleImages(p));
+      console.log('🎨 Puzzle pronti per il frontend:', result);
+      return result;
     }
     
     const params = new URLSearchParams();
@@ -232,8 +255,11 @@ export const puzzleAPI = {
   // Get puzzle pieces for specific difficulty
   getPieces: async (puzzleId, difficulty) => {
     if (USE_MOCK) {
+      console.log(`✂️ Generazione pezzi per puzzle ${puzzleId}, difficoltà: ${difficulty}`);
       await new Promise(resolve => setTimeout(resolve, 800)); // Simula tempo di processing
-      return await generateMockPieces(puzzleId, difficulty);
+      const pieces = await generateMockPieces(puzzleId, difficulty);
+      console.log(`✅ ${pieces.total} pezzi generati correttamente`);
+      return pieces;
     }
     
     const response = await api.get(`/api/puzzles/${puzzleId}/pieces/${difficulty}`);

@@ -43,6 +43,7 @@ const AdminPuzzleManager = () => {
     description: '',
     category: 'Storia',
     image_url: '',
+    thumbnail_url: '',
     original_image: {
       url: '',
       width: 800,
@@ -51,6 +52,11 @@ const AdminPuzzleManager = () => {
     status: 'published',
     is_featured: false,
     difficulty_available: ['easy', 'medium', 'hard'],
+    metadata: {
+      total_plays: 0,
+      avg_time: 0,
+      avg_score: 0
+    }
   });
 
   const handleEdit = (puzzle) => {
@@ -70,17 +76,44 @@ const AdminPuzzleManager = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    // Valida che ci sia un'immagine
+    if (!formData.image_url) {
+      alert('Seleziona un\'immagine per il puzzle');
+      return;
+    }
+    
+    // Crea oggetto puzzle completo con tutti i campi richiesti
+    const puzzleData = {
+      ...formData,
+      thumbnail_url: formData.image_url, // Usa stessa immagine come thumbnail
+      original_image: {
+        ...formData.original_image,
+        url: formData.image_url
+      },
+      metadata: formData.metadata || {
+        total_plays: 0,
+        avg_time: 0,
+        avg_score: 0
+      },
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
     let updatedPuzzles;
     if (editingPuzzle) {
       // Update existing
-      updatedPuzzles = puzzles.map(p => p.id === editingPuzzle.id ? { ...formData, id: p.id } : p);
+      updatedPuzzles = puzzles.map(p => p.id === editingPuzzle.id ? { ...puzzleData, id: p.id } : p);
     } else {
-      // Create new
-      updatedPuzzles = [...puzzles, { ...formData, id: `puzzle-${Date.now()}` }];
+      // Create new with unique ID
+      updatedPuzzles = [...puzzles, { ...puzzleData, id: `puzzle-${Date.now()}` }];
     }
     
     setPuzzles(updatedPuzzles);
     savePuzzlesToStorage(updatedPuzzles);
+    
+    // Log per debug
+    console.log('✅ Puzzle salvato:', puzzleData);
+    console.log('📦 Totale puzzles in localStorage:', updatedPuzzles.length);
     
     setShowModal(false);
     setEditingPuzzle(null);
@@ -89,6 +122,7 @@ const AdminPuzzleManager = () => {
       description: '',
       category: 'Storia',
       image_url: '',
+      thumbnail_url: '',
       original_image: {
         url: '',
         width: 800,
@@ -97,6 +131,11 @@ const AdminPuzzleManager = () => {
       status: 'published',
       is_featured: false,
       difficulty_available: ['easy', 'medium', 'hard'],
+      metadata: {
+        total_plays: 0,
+        avg_time: 0,
+        avg_score: 0
+      }
     });
   };
 
@@ -398,9 +437,11 @@ const AdminPuzzleManager = () => {
                 <div style={{ marginBottom: '1rem' }}>
                   <ImageUpload
                     onUploadSuccess={(imageData) => {
+                      console.log('🖼️ Immagine caricata:', imageData);
                       setFormData({
                         ...formData, 
                         image_url: imageData.url,
+                        thumbnail_url: imageData.url,
                         original_image: {
                           url: imageData.url,
                           width: imageData.width,
@@ -409,6 +450,7 @@ const AdminPuzzleManager = () => {
                       });
                     }}
                     onUploadError={(error) => {
+                      console.error('❌ Errore upload:', error);
                       alert('Errore upload: ' + error);
                     }}
                     existingImage={formData.image_url}

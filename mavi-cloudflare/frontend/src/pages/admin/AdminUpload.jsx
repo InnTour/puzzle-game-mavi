@@ -64,6 +64,7 @@ const AdminUpload = () => {
 
   // Handle upload success
   const handleUploadSuccess = (imageData) => {
+    console.log('✅ AdminUpload - Immagine caricata:', imageData);
     setSuccess(`Immagine caricata con successo!`);
     setError(null);
     
@@ -71,6 +72,7 @@ const AdminUpload = () => {
     setUploadedImages(prev => {
       const newImages = [imageData, ...prev];
       saveToStorage(newImages);
+      console.log(`📦 Totale immagini salvate in localStorage: ${newImages.length}`);
       return newImages;
     });
 
