@@ -23,7 +23,7 @@ const GameBoard = ({ difficulty, pieces, currentDropZone }) => {
           display: 'grid',
           gridTemplateColumns: `repeat(${cols}, 1fr)`,
           gridTemplateRows: `repeat(${rows}, 1fr)`,
-          gap: '4px',
+          gap: '0', /* RIMOSSO GAP - immagine continua senza divisioni */
           aspectRatio: '1',
           maxWidth: '800px',
           width: '100%',

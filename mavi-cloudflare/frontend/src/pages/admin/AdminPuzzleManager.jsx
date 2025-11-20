@@ -188,7 +188,7 @@ const AdminPuzzleManager = () => {
       </div>
 
       {/* Puzzle Grid */}
-      <div className="puzzles-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem', maxHeight: '70vh', overflowY: 'auto', paddingRight: '0.5rem' }}>
+      <div className="puzzles-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
         {puzzles.map(puzzle => (
           <div
             key={puzzle.id}

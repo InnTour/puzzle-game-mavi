@@ -4,10 +4,7 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  /* Rimosso height e overflow - usa scroll naturale della pagina */
 }
 
 /* Page Header */
@@ -135,15 +132,11 @@
 
 /* Gallery Section */
 .gallery-section {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
   background: white;
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  /* Rimosso flex e overflow - usa layout naturale */
 }
 
 .btn-refresh {
@@ -239,29 +232,7 @@
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.5rem;
   margin-top: 1.5rem;
-  max-height: 600px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 0.5rem;
-}
-
-/* Custom scrollbar for gallery */
-.gallery-grid::-webkit-scrollbar {
-  width: 8px;
-}
-
-.gallery-grid::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.gallery-grid::-webkit-scrollbar-thumb {
-  background: #cbd5e0;
-  border-radius: 4px;
-}
-
-.gallery-grid::-webkit-scrollbar-thumb:hover {
-  background: #a0aec0;
+  /* Rimosso scroll interno - usa scroll principale pagina */
 }
 
 .gallery-item {

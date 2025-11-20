@@ -586,7 +586,7 @@ h1, h2, h3 {
 
 /* DRAG & DROP - CRITICAL */
 
-/* Drop Zones - NO BORDER quando occupato per seamless stitching */
+/* Drop Zones - NO BORDER quando occupato per immagine continua */
 .drop-zone {
   min-height: 80px;
   background: rgba(255, 255, 255, 0.3);
@@ -609,7 +609,9 @@ h1, h2, h3 {
 
 .drop-zone.occupied {
   background: transparent;
-  border: none; /* RIMUOVI border quando occupato per seamless join */
+  border: none !important; /* RIMUOVI border per immagine continua senza divisioni */
+  padding: 0;
+  margin: 0;
 }
 
 @keyframes pulse {
@@ -654,9 +656,12 @@ h1, h2, h3 {
 }
 
 .puzzle-piece-wrapper.placed-draggable {
-  border: none; /* NESSUN border quando posizionato */
+  border: none !important; /* NESSUN border quando posizionato */
   border-radius: 0;
   cursor: grab;
+  padding: 0;
+  margin: 0;
+  background: transparent; /* Sfondo trasparente per immagine continua */
 }
 
 .puzzle-piece-wrapper.placed-draggable:hover {
