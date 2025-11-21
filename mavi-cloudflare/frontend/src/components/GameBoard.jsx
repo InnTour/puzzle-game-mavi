@@ -16,21 +16,22 @@ const GameBoard = ({ difficulty, pieces, currentDropZone }) => {
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4 w-full">
       <div
         className="puzzle-board"
         style={{
           display: 'grid',
           gridTemplateColumns: `repeat(${cols}, 1fr)`,
           gridTemplateRows: `repeat(${rows}, 1fr)`,
-          gap: '0', /* RIMOSSO GAP - immagine continua senza divisioni */
-          aspectRatio: '1',
-          maxWidth: '800px',
-          width: '100%',
-          padding: '16px',
-          background: 'rgba(51, 65, 85, 0.2)',
-          border: '3px dashed rgba(6, 182, 212, 0.3)',
-          borderRadius: '20px',
+          gap: '0px', /* ZERO GAP per immagine continua senza spazi */
+          width: '95%', /* Usa quasi tutta la larghezza */
+          maxWidth: 'none', /* Rimuovi limite max-width */
+          aspectRatio: 'auto', /* Lascia che grid determini proporzioni */
+          height: 'auto',
+          padding: '12px',
+          background: 'rgba(232, 223, 208, 0.3)',
+          border: '3px dashed rgba(196, 165, 116, 0.4)',
+          borderRadius: '16px',
         }}
         data-testid="puzzle-board"
       >

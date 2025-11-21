@@ -547,56 +547,68 @@ h1, h2, h3 {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: #F5F1E8; /* Beige MAVI */
 }
 
+/* LAYOUT VERTICALE TOTEM 9:16 - Board sopra, pezzi sotto */
 .game-content {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 350px;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
   padding: 1rem;
-  max-width: 1600px;
+  max-width: 100%;
   margin: 0 auto;
   width: 100%;
 }
 
+.game-board-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.game-sidebar {
+  /* Pezzi in basso - layout orizzontale */
+  width: 100%;
+  max-height: 180px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem;
+}
+
 @media (max-width: 1024px) {
   .game-content {
-    grid-template-columns: 1fr;
-  }
-  .game-sidebar {
-    order: -1;
+    flex-direction: column;
   }
 }
 
 /* Puzzle Board - Enlarged for comfortable play */
 .puzzle-board {
-  display: grid;
-  grid-template-columns: repeat(var(--cols), 1fr);
-  grid-template-rows: repeat(var(--rows), 1fr);
-  gap: 0px; /* ZERO GAP - pezzi adiacenti per stitching perfetto */
-  aspect-ratio: 1;
-  max-width: 800px;
-  width: 100%;
-  padding: 16px;
-  background: rgba(232, 223, 208, 0.3);
-  border: 3px dashed rgba(196, 165, 116, 0.4);
-  border-radius: 20px;
+  /* Grid properties are set inline in GameBoard.jsx for dynamic configuration */
+  /* Keep only non-conflicting defaults here */
+  box-sizing: border-box;
 }
 
 /* DRAG & DROP - CRITICAL */
 
-/* Drop Zones - NO BORDER quando occupato per immagine continua */
+/* Drop Zones - Visibili quando vuote, invisibili quando occupate */
 .drop-zone {
-  min-height: 80px;
-  background: rgba(255, 255, 255, 0.3);
-  border: 1px dashed rgba(196, 165, 116, 0.25);
-  border-radius: 0; /* NO border-radius per pezzi perfettamente adiacenti */
+  min-width: 100px; /* Larghezza minima per ogni casella */
+  min-height: 100px; /* Altezza minima per ogni casella */
+  aspect-ratio: 1; /* Caselle quadrate */
+  background: rgba(255, 255, 255, 0.6); /* Più visibile */
+  border: 3px dashed rgba(196, 165, 116, 0.7); /* Bordo MOLTO visibile per caselle vuote */
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   transition: all 0.2s;
+  /* Box-sizing per includere border nelle dimensioni */
+  box-sizing: border-box;
 }
 
 .drop-zone.highlight {
@@ -608,10 +620,16 @@ h1, h2, h3 {
 }
 
 .drop-zone.occupied {
-  background: transparent;
+  background: transparent !important;
   border: none !important; /* RIMUOVI border per immagine continua senza divisioni */
-  padding: 0;
-  margin: 0;
+  padding: 0 !important;
+  margin: 0 !important;
+  /* Rimuovi min-width/height per permettere immagine a riempire completamente */
+  min-width: unset;
+  min-height: unset;
+  /* Assicura che l'immagine riempia tutto lo spazio */
+  display: block;
+  overflow: hidden;
 }
 
 @keyframes pulse {
@@ -631,8 +649,13 @@ h1, h2, h3 {
   pointer-events: none;
   user-select: none;
   draggable: false;
-  border-radius: 0; /* NO border-radius per stitching perfetto */
+  border-radius: 0 !important; /* NO border-radius per stitching perfetto */
   display: block; /* Rimuove spazi white-space */
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important; /* NESSUN border sull'immagine */
+  /* Elimina ogni spazio bianco */
+  vertical-align: top;
 }
 
 .puzzle-piece-wrapper {
@@ -643,6 +666,12 @@ h1, h2, h3 {
   touch-action: none;
   user-select: none;
   transition: all 0.2s;
+  /* Dimensione fissa per pezzi nel tray orizzontale */
+  min-width: 80px;
+  min-height: 80px;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
 }
 
 .puzzle-piece-wrapper:hover {
@@ -657,11 +686,15 @@ h1, h2, h3 {
 
 .puzzle-piece-wrapper.placed-draggable {
   border: none !important; /* NESSUN border quando posizionato */
-  border-radius: 0;
+  border-radius: 0 !important;
   cursor: grab;
-  padding: 0;
-  margin: 0;
-  background: transparent; /* Sfondo trasparente per immagine continua */
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important; /* Sfondo trasparente per immagine continua */
+  /* Riempi completamente lo spazio della drop-zone */
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .puzzle-piece-wrapper.placed-draggable:hover {
@@ -689,27 +722,52 @@ h1, h2, h3 {
 }
 
 /* PIECE TRAY */
+/* PIECE TRAY - LAYOUT ORIZZONTALE IN BASSO (TOTEM STYLE) */
 .piece-tray-container {
-  background: rgba(255, 255, 255, 0.5);
-  border: 2px solid rgba(196, 165, 116, 0.3);
-  border-radius: 20px;
-  padding: 1.5rem;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
+  background: rgba(232, 223, 208, 0.5); /* Beige MAVI */
+  border: 2px solid rgba(196, 165, 116, 0.4);
+  border-radius: 16px;
+  padding: 1rem;
+  width: 100%;
 }
 
 .piece-tray-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(196, 165, 116, 0.3);
 }
 
+/* GRID ORIZZONTALE - pezzi in fila da sinistra a destra */
 .piece-tray-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-direction: row;
   gap: 0.75rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.5rem;
+  /* Scrollbar personalizzata */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(196, 165, 116, 0.5) rgba(232, 223, 208, 0.3);
+}
+
+.piece-tray-grid::-webkit-scrollbar {
+  height: 6px;
+}
+
+.piece-tray-grid::-webkit-scrollbar-track {
+  background: rgba(232, 223, 208, 0.3);
+  border-radius: 3px;
+}
+
+.piece-tray-grid::-webkit-scrollbar-thumb {
+  background: rgba(196, 165, 116, 0.5);
+  border-radius: 3px;
+}
+
+.piece-tray-grid::-webkit-scrollbar-thumb:hover {
+  background: rgba(196, 165, 116, 0.7);
 }
 
 /* VICTORY MODAL */
