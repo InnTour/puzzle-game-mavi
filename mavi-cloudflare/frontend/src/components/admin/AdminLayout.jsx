@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import SyncButton from './SyncButton';
 import './AdminLayout.css';
 
 /**
@@ -149,6 +150,9 @@ const AdminLayout = ({ children }) => {
           {children}
         </div>
       </main>
+
+      {/* Sync Button */}
+      <SyncButton />
 
       {/* Overlay per mobile quando sidebar aperta */}
       {sidebarOpen && (

@@ -142,7 +142,7 @@ const generateMockPieces = async (puzzleId, difficulty) => {
   const gridSize = gridSizes[difficulty] || 4;
   
   // Trova il puzzle - prima cerca nell'admin, poi nei mock
-  const allPuzzles = loadPuzzlesFromAdmin();
+  const allPuzzles = await loadPuzzlesFromAdmin();
   const puzzle = allPuzzles.find(p => p.id === puzzleId);
   
   if (!puzzle) {
@@ -183,25 +183,40 @@ const generateMockPieces = async (puzzleId, difficulty) => {
   }
 };
 
-// Carica puzzles da localStorage (admin creati) o usa mock
-const loadPuzzlesFromAdmin = () => {
+// Carica puzzles da Backend API o localStorage (fallback)
+const loadPuzzlesFromAdmin = async () => {
   try {
+    // Prova prima dal backend
+    if (!USE_MOCK && api) {
+      try {
+        console.log('📡 Caricamento puzzles da Backend API...');
+        const response = await api.get('/api/puzzles');
+        console.log(`✅ ${response.data.length} puzzle caricati da backend:`, response.data);
+        if (response.data.length > 0) {
+          return response.data;
+        }
+      } catch (apiErr) {
+        console.warn('⚠️ Backend API non disponibile, provo localStorage:', apiErr.message);
+      }
+    }
+
+    // Fallback: localStorage
     const stored = localStorage.getItem('mavi_admin_puzzles');
     console.log('📦 Caricamento puzzles da localStorage...', stored ? 'TROVATO' : 'NON TROVATO');
     
     if (stored) {
       const adminPuzzles = JSON.parse(stored);
-      console.log(`✅ ${adminPuzzles.length} puzzle caricati da admin:`, adminPuzzles);
+      console.log(`✅ ${adminPuzzles.length} puzzle caricati da localStorage:`, adminPuzzles);
       
       if (adminPuzzles.length > 0) {
         return adminPuzzles;
       }
     }
-    console.log('⚠️ Nessun puzzle admin trovato, uso MOCK_PUZZLES');
+    console.log('⚠️ Nessun puzzle trovato, uso MOCK_PUZZLES');
   } catch (err) {
     console.error('❌ Error loading admin puzzles:', err);
   }
-  // Fallback ai mock puzzles
+  // Fallback finale ai mock puzzles
   return MOCK_PUZZLES;
 };
 
@@ -214,7 +229,7 @@ export const puzzleAPI = {
       await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
       
       // Carica puzzles da admin o mock
-      const allPuzzles = loadPuzzlesFromAdmin();
+      const allPuzzles = await loadPuzzlesFromAdmin();
       console.log(`🔍 Filtro status: ${filters.status || 'NESSUNO'}`);
       const filtered = allPuzzles.filter(p => !filters.status || p.status === filters.status);
       console.log(`✅ ${filtered.length} puzzle filtrati da visualizzare`);
@@ -240,7 +255,7 @@ export const puzzleAPI = {
       await new Promise(resolve => setTimeout(resolve, 200));
       
       // Carica puzzles da admin o mock
-      const allPuzzles = loadPuzzlesFromAdmin();
+      const allPuzzles = await loadPuzzlesFromAdmin();
       const puzzle = allPuzzles.find(p => p.id === puzzleId);
       
       if (!puzzle) throw new Error('Puzzle not found');
