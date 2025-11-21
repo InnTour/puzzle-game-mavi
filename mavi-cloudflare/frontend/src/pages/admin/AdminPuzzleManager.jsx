@@ -4,37 +4,63 @@ import ImageUpload from '../../components/admin/ImageUpload';
 import { Plus, Edit, Trash2, Image, Eye, EyeOff, Star, Upload } from 'lucide-react';
 import './AdminPuzzleManager.css';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3002';
+
 /**
  * Admin Puzzle Manager - Gestione Completa Puzzle
- * Upload, Edit, Delete, Preview
+ * Usa backend API per persistenza condivisa
  */
 const AdminPuzzleManager = () => {
-  const STORAGE_KEY = 'mavi_admin_puzzles';
+  const [puzzles, setPuzzles] = useState([]);
+  const [loading, setLoading] = useState(true);
   
-  // Carica puzzles da localStorage o usa default
-  const loadPuzzlesFromStorage = () => {
+  // Carica puzzles dal backend
+  const loadPuzzlesFromBackend = async () => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        return JSON.parse(stored);
-      }
+      console.log('📡 Caricamento puzzles da backend...');
+      const response = await fetch(`${BACKEND_URL}/api/puzzles`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      
+      // Aggiungi backend URL alle immagini
+      const puzzlesWithFullUrl = data.map(p => ({
+        ...p,
+        image_url: p.image_url?.startsWith('http') ? p.image_url : `${BACKEND_URL}${p.image_url}`,
+        thumbnail_url: p.thumbnail_url?.startsWith('http') ? p.thumbnail_url : `${BACKEND_URL}${p.thumbnail_url}`,
+        original_image: {
+          ...p.original_image,
+          url: p.original_image?.url?.startsWith('http') ? p.original_image.url : `${BACKEND_URL}${p.original_image?.url}`
+        }
+      }));
+      
+      console.log(`✅ ${puzzlesWithFullUrl.length} puzzles caricati`);
+      setPuzzles(puzzlesWithFullUrl);
+      
+      // Salva anche in localStorage per fallback
+      localStorage.setItem('mavi_admin_puzzles', JSON.stringify(puzzlesWithFullUrl));
+      return puzzlesWithFullUrl;
     } catch (err) {
-      console.error('Error loading puzzles from storage:', err);
+      console.error('❌ Errore caricamento puzzles:', err);
+      // Fallback a localStorage
+      try {
+        const stored = localStorage.getItem('mavi_admin_puzzles');
+        if (stored) {
+          const localPuzzles = JSON.parse(stored);
+          console.log(`⚠️ Fallback localStorage: ${localPuzzles.length} puzzles`);
+          setPuzzles(localPuzzles);
+          return localPuzzles;
+        }
+      } catch {}
+      return [];
+    } finally {
+      setLoading(false);
     }
-    // Default puzzles se nessuno salvato
-    return [];
   };
   
-  // Salva puzzles in localStorage
-  const savePuzzlesToStorage = (puzzlesData) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(puzzlesData));
-    } catch (err) {
-      console.error('Error saving puzzles to storage:', err);
-    }
-  };
-  
-  const [puzzles, setPuzzles] = useState(loadPuzzlesFromStorage());
+  // Carica puzzles all'avvio
+  React.useEffect(() => {
+    loadPuzzlesFromBackend();
+  }, []);
 
   const [showModal, setShowModal] = useState(false);
   const [editingPuzzle, setEditingPuzzle] = useState(null);
@@ -65,15 +91,28 @@ const AdminPuzzleManager = () => {
     setShowModal(true);
   };
 
-  const handleDelete = (puzzleId) => {
+  const handleDelete = async (puzzleId) => {
     if (window.confirm('Eliminare questo puzzle?')) {
-      const updatedPuzzles = puzzles.filter(p => p.id !== puzzleId);
-      setPuzzles(updatedPuzzles);
-      savePuzzlesToStorage(updatedPuzzles);
+      try {
+        console.log('🗑️ Eliminazione puzzle:', puzzleId);
+        const response = await fetch(`${BACKEND_URL}/api/puzzles/${puzzleId}`, {
+          method: 'DELETE'
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        console.log('✅ Puzzle eliminato dal backend');
+        
+        // Aggiorna stato locale
+        const updatedPuzzles = puzzles.filter(p => p.id !== puzzleId);
+        setPuzzles(updatedPuzzles);
+        localStorage.setItem('mavi_admin_puzzles', JSON.stringify(updatedPuzzles));
+      } catch (err) {
+        console.error('❌ Errore eliminazione:', err);
+        alert('Errore eliminazione puzzle');
+      }
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Valida che ci sia un'immagine
@@ -82,10 +121,10 @@ const AdminPuzzleManager = () => {
       return;
     }
     
-    // Crea oggetto puzzle completo con tutti i campi richiesti
+    // Crea oggetto puzzle completo
     const puzzleData = {
       ...formData,
-      thumbnail_url: formData.image_url, // Usa stessa immagine come thumbnail
+      thumbnail_url: formData.image_url,
       original_image: {
         ...formData.original_image,
         url: formData.image_url
@@ -94,65 +133,98 @@ const AdminPuzzleManager = () => {
         total_plays: 0,
         avg_time: 0,
         avg_score: 0
-      },
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      }
     };
     
-    let updatedPuzzles;
-    if (editingPuzzle) {
-      // Update existing
-      updatedPuzzles = puzzles.map(p => p.id === editingPuzzle.id ? { ...puzzleData, id: p.id } : p);
-    } else {
-      // Create new with unique ID
-      updatedPuzzles = [...puzzles, { ...puzzleData, id: `puzzle-${Date.now()}` }];
-    }
-    
-    setPuzzles(updatedPuzzles);
-    savePuzzlesToStorage(updatedPuzzles);
-    
-    // Log per debug
-    console.log('✅ Puzzle salvato:', puzzleData);
-    console.log('📦 Totale puzzles in localStorage:', updatedPuzzles.length);
-    
-    setShowModal(false);
-    setEditingPuzzle(null);
-    setFormData({
-      title: '',
-      description: '',
-      category: 'Storia',
-      image_url: '',
-      thumbnail_url: '',
-      original_image: {
-        url: '',
-        width: 800,
-        height: 600
-      },
-      status: 'published',
-      is_featured: false,
-      difficulty_available: ['easy', 'medium', 'hard'],
-      metadata: {
-        total_plays: 0,
-        avg_time: 0,
-        avg_score: 0
+    try {
+      let response;
+      if (editingPuzzle) {
+        // Update existing
+        console.log('📝 Aggiornamento puzzle:', editingPuzzle.id);
+        response = await fetch(`${BACKEND_URL}/api/puzzles/${editingPuzzle.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...puzzleData, id: editingPuzzle.id })
+        });
+      } else {
+        // Create new
+        console.log('➕ Creazione nuovo puzzle');
+        response = await fetch(`${BACKEND_URL}/api/puzzles`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(puzzleData)
+        });
       }
-    });
+      
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      
+      const savedPuzzle = await response.json();
+      console.log('✅ Puzzle salvato sul backend:', savedPuzzle);
+      
+      // Aggiorna stato locale
+      await loadPuzzlesFromBackend();
+      
+      setShowModal(false);
+      setEditingPuzzle(null);
+      setFormData({
+        title: '',
+        description: '',
+        category: 'Storia',
+        image_url: '',
+        thumbnail_url: '',
+        original_image: {
+          url: '',
+          width: 800,
+          height: 600
+        },
+        status: 'published',
+        is_featured: false,
+        difficulty_available: ['easy', 'medium', 'hard'],
+        metadata: {
+          total_plays: 0,
+          avg_time: 0,
+          avg_score: 0
+        }
+      });
+    } catch (err) {
+      console.error('❌ Errore salvataggio puzzle:', err);
+      alert('Errore salvataggio puzzle');
+    }
   };
 
-  const toggleFeatured = (puzzleId) => {
-    const updatedPuzzles = puzzles.map(p => 
-      p.id === puzzleId ? { ...p, is_featured: !p.is_featured } : p
-    );
-    setPuzzles(updatedPuzzles);
-    savePuzzlesToStorage(updatedPuzzles);
+  const toggleFeatured = async (puzzleId) => {
+    const puzzle = puzzles.find(p => p.id === puzzleId);
+    if (!puzzle) return;
+    
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/puzzles/${puzzleId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...puzzle, is_featured: !puzzle.is_featured })
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      await loadPuzzlesFromBackend();
+    } catch (err) {
+      console.error('❌ Errore toggle featured:', err);
+    }
   };
 
-  const toggleStatus = (puzzleId) => {
-    const updatedPuzzles = puzzles.map(p => 
-      p.id === puzzleId ? { ...p, status: p.status === 'published' ? 'draft' : 'published' } : p
-    );
-    setPuzzles(updatedPuzzles);
-    savePuzzlesToStorage(updatedPuzzles);
+  const toggleStatus = async (puzzleId) => {
+    const puzzle = puzzles.find(p => p.id === puzzleId);
+    if (!puzzle) return;
+    
+    try {
+      const newStatus = puzzle.status === 'published' ? 'draft' : 'published';
+      const response = await fetch(`${BACKEND_URL}/api/puzzles/${puzzleId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...puzzle, status: newStatus })
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      await loadPuzzlesFromBackend();
+    } catch (err) {
+      console.error('❌ Errore toggle status:', err);
+    }
   };
 
   return (

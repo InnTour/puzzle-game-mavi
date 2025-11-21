@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import ImageUpload from '../../components/admin/ImageUpload';
 import './AdminUpload.css';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3002';
+
 /**
  * Pagina Upload Immagini Admin
- * Permette di caricare immagini su Cloudinary e vedere la galleria
+ * Usa backend API per persistenza condivisa
  */
 const AdminUpload = () => {
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -12,32 +14,7 @@ const AdminUpload = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  // Chiave localStorage per le immagini
-  const STORAGE_KEY = 'mavi_uploaded_images';
-
-  // Carica immagini da localStorage
-  const loadFromStorage = () => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch (err) {
-      console.error('Error loading from storage:', err);
-    }
-    return [];
-  };
-
-  // Salva immagini in localStorage
-  const saveToStorage = (images) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(images));
-    } catch (err) {
-      console.error('Error saving to storage:', err);
-    }
-  };
-
-  // Carica lista immagini esistenti
+  // Carica immagini dal backend
   useEffect(() => {
     loadImages();
   }, []);
@@ -45,39 +22,99 @@ const AdminUpload = () => {
   const loadImages = async () => {
     setLoading(true);
     try {
-      // Carica da localStorage
-      const storedImages = loadFromStorage();
+      console.log('📡 Caricamento immagini da backend:', `${BACKEND_URL}/api/images`);
+      const response = await fetch(`${BACKEND_URL}/api/images`);
       
-      if (storedImages.length > 0) {
-        setUploadedImages(storedImages);
-      } else {
-        // Nessuna immagine caricata
-        setUploadedImages([]);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
+      
+      const images = await response.json();
+      console.log(`✅ ${images.length} immagini caricate dal backend`);
+      
+      // Aggiungi backend URL alle immagini
+      const imagesWithFullUrl = images.map(img => ({
+        ...img,
+        url: img.url.startsWith('http') ? img.url : `${BACKEND_URL}${img.url}`,
+        data_url: img.url.startsWith('http') ? img.url : `${BACKEND_URL}${img.url}` // Compatibilità
+      }));
+      
+      setUploadedImages(imagesWithFullUrl);
+      setError(null);
     } catch (err) {
-      console.error('Error loading images:', err);
-      setError('Errore nel caricamento delle immagini');
+      console.error('❌ Errore caricamento immagini:', err);
+      setError(`Errore nel caricamento delle immagini: ${err.message}`);
+      // Fallback a localStorage se backend non disponibile
+      try {
+        const stored = localStorage.getItem('mavi_uploaded_images');
+        if (stored) {
+          const localImages = JSON.parse(stored);
+          console.log(`⚠️ Fallback a localStorage: ${localImages.length} immagini`);
+          setUploadedImages(localImages);
+        }
+      } catch {}
     } finally {
       setLoading(false);
     }
   };
 
   // Handle upload success
-  const handleUploadSuccess = (imageData) => {
-    console.log('✅ AdminUpload - Immagine caricata:', imageData);
-    setSuccess(`Immagine caricata con successo!`);
+  const handleUploadSuccess = async (imageData) => {
+    console.log('✅ Immagine caricata localmente:', imageData);
+    setSuccess('Caricamento immagine sul backend...');
     setError(null);
     
-    // Aggiungi alla lista e salva in localStorage
-    setUploadedImages(prev => {
-      const newImages = [imageData, ...prev];
-      saveToStorage(newImages);
-      console.log(`📦 Totale immagini salvate in localStorage: ${newImages.length}`);
-      return newImages;
-    });
+    try {
+      // Invia al backend
+      console.log('📤 Invio immagine al backend...');
+      const response = await fetch(`${BACKEND_URL}/api/images/upload-base64`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data_url: imageData.data_url,
+          name: imageData.name || 'image.jpg'
+        })
+      });
 
-    // Rimuovi messaggio successo dopo 5 secondi
-    setTimeout(() => setSuccess(null), 5000);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const savedImage = await response.json();
+      console.log('✅ Immagine salvata sul backend:', savedImage);
+      
+      // Aggiungi URL completo
+      savedImage.url = savedImage.url.startsWith('http') ? savedImage.url : `${BACKEND_URL}${savedImage.url}`;
+      savedImage.data_url = savedImage.url;
+      
+      setSuccess('Immagine caricata con successo sul server!');
+      
+      // Aggiorna lista
+      setUploadedImages(prev => [savedImage, ...prev]);
+      
+      // Salva anche in localStorage per fallback
+      try {
+        const stored = JSON.parse(localStorage.getItem('mavi_uploaded_images') || '[]');
+        stored.push(savedImage);
+        localStorage.setItem('mavi_uploaded_images', JSON.stringify(stored));
+      } catch {}
+
+      setTimeout(() => setSuccess(null), 5000);
+    } catch (err) {
+      console.error('❌ Errore upload backend:', err);
+      setError(`Errore caricamento su server: ${err.message}`);
+      
+      // Fallback a localStorage
+      try {
+        const stored = JSON.parse(localStorage.getItem('mavi_uploaded_images') || '[]');
+        stored.push(imageData);
+        localStorage.setItem('mavi_uploaded_images', JSON.stringify(stored));
+        setUploadedImages(prev => [imageData, ...prev]);
+        setSuccess('Immagine salvata localmente (backend non disponibile)');
+      } catch {}
+    }
   };
 
   // Handle upload error
@@ -95,24 +132,28 @@ const AdminUpload = () => {
   };
 
   // Delete image
-  const handleDeleteImage = async (publicId) => {
+  const handleDeleteImage = async (imageId) => {
     if (!window.confirm('Sei sicuro di voler eliminare questa immagine?')) {
       return;
     }
 
     try {
-      // Rimuovi dalla lista e salva in localStorage
-      setUploadedImages(prev => {
-        const newImages = prev.filter(img => img.public_id !== publicId);
-        saveToStorage(newImages);
-        return newImages;
+      console.log('🗑️ Eliminazione immagine:', imageId);
+      const response = await fetch(`${BACKEND_URL}/api/images/${imageId}`, {
+        method: 'DELETE'
       });
-      
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      console.log('✅ Immagine eliminata dal backend');
+      setUploadedImages(prev => prev.filter(img => img.id !== imageId));
       setSuccess('Immagine eliminata con successo');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      console.error('Delete error:', err);
-      setError('Errore nell\'eliminazione dell\'immagine');
+      console.error('❌ Errore eliminazione:', err);
+      setError(`Errore nell'eliminazione: ${err.message}`);
     }
   };
 
@@ -123,7 +164,7 @@ const AdminUpload = () => {
         <div className="header-content">
           <h1 className="page-title">📤 Carica Immagini</h1>
           <p className="page-description">
-            Carica immagini per i puzzle su Cloudinary. Le immagini verranno automaticamente ottimizzate.
+            Carica immagini per i puzzle. Le immagini vengono salvate sul server e sono accessibili a tutti.
           </p>
         </div>
       </div>
@@ -188,70 +229,69 @@ const AdminUpload = () => {
               </svg>
               Ricarica
             </button>
-            {uploadedImages.length > 0 && (
-              <button 
-                className="btn-refresh"
-                onClick={() => {
-                  if (window.confirm(`Sei sicuro di voler eliminare TUTTE le ${uploadedImages.length} immagini?`)) {
-                    setUploadedImages([]);
-                    saveToStorage([]);
-                    setSuccess('Tutte le immagini sono state eliminate');
-                    setTimeout(() => setSuccess(null), 3000);
-                  }
-                }}
-                style={{ background: '#fc8181', color: 'white' }}
-                title="Elimina tutte le immagini"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                Elimina Tutto
-              </button>
-            )}
           </div>
         </div>
 
-        {loading ? (
-          <div className="gallery-loading">
-            <div className="spinner"></div>
+        {/* Loading State */}
+        {loading && (
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
             <p>Caricamento immagini...</p>
           </div>
-        ) : uploadedImages.length === 0 ? (
-          <div className="gallery-empty">
+        )}
+
+        {/* Empty State */}
+        {!loading && uploadedImages.length === 0 && (
+          <div className="empty-state">
             <svg className="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <p>Nessuna immagine caricata</p>
-            <p className="empty-hint">Carica la tua prima immagine usando il pannello sopra</p>
+            <span>Carica la tua prima immagine per iniziare</span>
           </div>
-        ) : (
+        )}
+
+        {/* Gallery Grid */}
+        {!loading && uploadedImages.length > 0 && (
           <div className="gallery-grid">
             {uploadedImages.map((image) => (
-              <div key={image.public_id} className="gallery-item">
-                <div className="item-image">
-                  <img src={image.url} alt="Uploaded" />
-                </div>
-                <div className="item-info">
-                  <p className="item-dimensions">{image.width} × {image.height}px</p>
-                  <div className="item-actions">
-                    <button
-                      className="btn-action btn-copy"
-                      onClick={() => copyToClipboard(image.url)}
+              <div key={image.id} className="gallery-item">
+                <div className="image-wrapper">
+                  <img 
+                    src={image.url || image.data_url} 
+                    alt={image.name}
+                    loading="lazy"
+                  />
+                  <div className="image-overlay">
+                    <button 
+                      className="btn-icon"
+                      onClick={() => copyToClipboard(image.url || image.data_url)}
                       title="Copia URL"
                     >
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                       </svg>
                     </button>
-                    <button
-                      className="btn-action btn-delete"
-                      onClick={() => handleDeleteImage(image.public_id)}
+                    <button 
+                      className="btn-icon btn-delete"
+                      onClick={() => handleDeleteImage(image.id)}
                       title="Elimina"
                     >
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                     </button>
+                  </div>
+                </div>
+                <div className="image-info">
+                  <h3 className="image-name" title={image.name}>{image.name}</h3>
+                  <div className="image-meta">
+                    <span className="image-size">
+                      {image.size ? `${(image.size / 1024 / 1024).toFixed(2)} MB` : 'N/A'}
+                    </span>
+                    <span className="image-date">
+                      {image.uploaded_at ? new Date(image.uploaded_at).toLocaleDateString('it-IT') : 'N/A'}
+                    </span>
                   </div>
                 </div>
               </div>
