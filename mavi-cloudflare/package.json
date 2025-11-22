@@ -1,0 +1,37 @@
+{
+  "name": "mavi-puzzle-cloudflare",
+  "version": "1.0.0",
+  "description": "MAVI Puzzle Game - Cloudflare Edition (Serverless)",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd workers && npm install && cd ../frontend && npm install --legacy-peer-deps",
+    "dev:workers": "cd workers && wrangler dev",
+    "dev:frontend": "cd frontend && npm start",
+    "build:frontend": "cd frontend && npm run build",
+    "deploy:workers": "cd workers && wrangler deploy",
+    "deploy:pages": "cd frontend && npm run build && wrangler pages deploy build --project-name=mavi-puzzle",
+    "deploy:all": "npm run deploy:workers && npm run deploy:pages",
+    "db:create": "cd workers && wrangler d1 create mavi-puzzle-db",
+    "db:init": "cd workers && wrangler d1 execute mavi-puzzle-db --file=../database/schema.sql",
+    "db:query": "cd workers && wrangler d1 execute mavi-puzzle-db",
+    "r2:create": "cd workers && wrangler r2 bucket create mavi-puzzle-images",
+    "test:api": "curl https://mavi-puzzle-api.workers.dev/health",
+    "logs": "cd workers && wrangler tail"
+  },
+  "keywords": [
+    "puzzle",
+    "game",
+    "cloudflare",
+    "workers",
+    "d1",
+    "r2",
+    "serverless",
+    "totem"
+  ],
+  "author": "MAVI Museum",
+  "license": "MIT",
+  "workspaces": [
+    "workers",
+    "frontend"
+  ]
+}

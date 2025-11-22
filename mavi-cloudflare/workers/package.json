@@ -1,0 +1,32 @@
+{
+  "name": "mavi-puzzle-api",
+  "version": "1.0.0",
+  "description": "MAVI Puzzle Game API - Cloudflare Workers",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "db:create": "wrangler d1 create mavi-puzzle-db",
+    "db:init": "wrangler d1 execute mavi-puzzle-db --file=./database/schema.sql",
+    "db:migrate": "wrangler d1 migrations apply mavi-puzzle-db",
+    "db:local": "wrangler d1 execute mavi-puzzle-db --local --file=./database/schema.sql"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "puzzle",
+    "game",
+    "api"
+  ],
+  "author": "MAVI Museum",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.78.0"
+  },
+  "dependencies": {
+    "cloudinary": "^2.8.0",
+    "hono": "^4.6.0",
+    "nanoid": "^5.0.0"
+  }
+}

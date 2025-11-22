@@ -12,6 +12,9 @@ import AdminUpload from "./pages/admin/AdminUpload";
 import AdminLibrary from "./pages/admin/AdminLibrary";
 import AdminLeaderboard from "./pages/admin/AdminLeaderboard";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminSettings from "./pages/admin/AdminSettings";
+import AdminPuzzleManager from "./pages/admin/AdminPuzzleManager";
+import AdminStats from "./pages/admin/AdminStats";
 import { initializeTotem, TOTEM_CONFIG } from "./config/totem.config";
 
 function App() {
@@ -42,6 +45,9 @@ function App() {
           <Route path="/admin/library" element={<AdminLibrary />} />
           <Route path="/admin/leaderboard" element={<AdminLeaderboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin/puzzles" element={<AdminPuzzleManager />} />
+          <Route path="/admin/stats" element={<AdminStats />} />
         </Routes>
       </BrowserRouter>
     </div>

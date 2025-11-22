@@ -5,18 +5,43 @@ Applicazione web full-stack di puzzle fotografici storici del Museo MAVI (Lacedo
 ![MAVI Puzzle](https://img.shields.io/badge/Stack-React%20%2B%20FastAPI-brightgreen)
 ![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)
 ![Cloudinary](https://img.shields.io/badge/Storage-Cloudinary-blue)
+![Totem Ready](https://img.shields.io/badge/Totem-Ready-blue)
 
 ---
 
 ## 🎯 Features
 
-- ✅ **6 Livelli di Difficoltà** (2x2 fino a 7x7)
-- ✅ **Drag & Drop Fluido** (mouse + touch)
-- ✅ **Admin Dashboard** completo
+- ✅ **3 Livelli di Difficoltà** (4x4, 6x6, 8x8) - Ottimizzato per totem
+- ✅ **Layout Verticale 9:16** - Display verticale 32"
+- ✅ **Modalità Kiosk** - Fullscreen automatico per totem Windows
+- ✅ **Drag & Drop Fluido** (mouse + touch ottimizzato)
+- ✅ **Touch-Optimized** - Target grandi (min 60px) per touchscreen
+- ✅ **Admin Dashboard** completo (accesso solo via URL diretto)
 - ✅ **Upload Immagini** con compressione automatica
-- ✅ **Leaderboard & Achievements**
+- ✅ **Leaderboard** integrata
 - ✅ **Design Moderno** con palette MAVI
-- ✅ **Responsive** (desktop, tablet, mobile)
+- ✅ **No Screensaver** - Sessioni illimitate per uso pubblico
+
+---
+
+## 🖥️ Modalità Totem
+
+**🎯 Configurazione Ottimale:**
+- Display verticale 32" (1080x1920 o superiore)
+- Windows 10/11 con avvio automatico
+- Browser Chrome/Edge in kiosk mode
+- Touchscreen calibrato (opzionale)
+
+**📘 Setup Completo**: Vedi **`TOTEM_SETUP.md`**
+
+**🚀 Quick Start Totem:**
+```bash
+# Avvia con script Windows
+totem-windows\start-totem.bat
+
+# Oppure PowerShell
+PowerShell -ExecutionPolicy Bypass -File totem-windows\start-totem.ps1
+```
 
 ---
 
@@ -25,9 +50,9 @@ Applicazione web full-stack di puzzle fotografici storici del Museo MAVI (Lacedo
 **📘 Guida Completa**: Vedi **`DEPLOYMENT_GUIDE.md`**
 
 **Stack Consigliato:**
-- **Frontend**: Hostinger (static build)
-- **Backend**: Render.com (free tier)
-- **Database**: MongoDB Atlas (free 512MB)
+- **Frontend**: Hostinger (static build) o locale su PC totem
+- **Backend**: Render.com (free tier) o locale
+- **Database**: MongoDB Atlas (free 512MB) o MongoDB locale
 - **Storage**: Cloudinary (già configurato)
 
 ---

@@ -1,0 +1,212 @@
+/* Image Upload Component Styles */
+
+.image-upload-container {
+  width: 100%;
+  height: 100%;
+  min-height: 250px;
+}
+
+/* Dropzone */
+.upload-dropzone {
+  width: 100%;
+  height: 100%;
+  min-height: 250px;
+  border: 2px dashed #cbd5e0;
+  border-radius: 12px;
+  background: #f7fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 2rem;
+}
+
+.upload-dropzone:hover {
+  border-color: #4299e1;
+  background: #ebf8ff;
+}
+
+.upload-dropzone.dragging {
+  border-color: #3182ce;
+  background: #bee3f8;
+  transform: scale(1.02);
+}
+
+.upload-dropzone.uploading {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Upload Icon */
+.upload-icon {
+  width: 64px;
+  height: 64px;
+  color: #4299e1;
+  margin-bottom: 1rem;
+}
+
+/* Upload Text */
+.upload-text-primary {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0.5rem 0;
+}
+
+.upload-text-secondary {
+  font-size: 0.875rem;
+  color: #718096;
+  margin: 0.25rem 0;
+}
+
+.upload-text-hint {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  margin-top: 1rem;
+}
+
+/* Upload Progress */
+.upload-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #4299e1;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4299e1, #3182ce);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4299e1;
+}
+
+/* Preview */
+.upload-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 250px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.upload-preview:hover .preview-overlay {
+  opacity: 1;
+}
+
+/* Preview Buttons */
+.btn-preview-remove,
+.btn-preview-change {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  color: #2d3748;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-preview-remove:hover {
+  background: #fc8181;
+  color: white;
+  transform: scale(1.1);
+}
+
+.btn-preview-change:hover {
+  background: #4299e1;
+  color: white;
+  transform: scale(1.1);
+}
+
+.btn-preview-remove svg,
+.btn-preview-change svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .upload-dropzone {
+    min-height: 200px;
+    padding: 1.5rem;
+  }
+
+  .upload-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .upload-text-primary {
+    font-size: 1rem;
+  }
+
+  .btn-preview-remove,
+  .btn-preview-change {
+    width: 56px;
+    height: 56px;
+  }
+
+  .btn-preview-remove svg,
+  .btn-preview-change svg {
+    width: 28px;
+    height: 28px;
+  }
+}
