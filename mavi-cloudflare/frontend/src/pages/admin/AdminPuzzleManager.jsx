@@ -7,6 +7,106 @@ import './AdminPuzzleManager.css';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3002';
 
 /**
+ * Componente Galleria Immagini per Selezione
+ */
+const ImageGallerySelector = ({ onSelectImage, selectedImage }) => {
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadImages = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/images`);
+        if (!response.ok) throw new Error('Failed to load images');
+        const data = await response.json();
+        setImages(data);
+      } catch (err) {
+        console.error('❌ Errore caricamento immagini:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadImages();
+  }, []);
+
+  if (loading) {
+    return <div style={{ padding: '1rem', textAlign: 'center', color: '#8B7355' }}>Caricamento immagini...</div>;
+  }
+
+  if (images.length === 0) {
+    return (
+      <div style={{ 
+        padding: '2rem', 
+        textAlign: 'center', 
+        color: '#8B7355',
+        background: 'rgba(232,223,208,0.3)',
+        borderRadius: '10px'
+      }}>
+        <p>Nessuna immagine disponibile.</p>
+        <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
+          Carica prima un'immagine in "Carica Immagini"
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+      gap: '1rem',
+      marginTop: '1rem'
+    }}>
+      {images.map((image) => (
+        <div
+          key={image.id}
+          onClick={() => onSelectImage(image.url, image)}
+          style={{
+            position: 'relative',
+            cursor: 'pointer',
+            borderRadius: '10px',
+            overflow: 'hidden',
+            border: selectedImage === image.url ? '3px solid #6B8E6F' : '2px solid rgba(107,142,111,0.2)',
+            transition: 'all 0.2s',
+            aspectRatio: '1',
+            background: '#f7f7f7'
+          }}
+        >
+          <img
+            src={image.thumbnail_url || image.url}
+            alt={image.name}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
+          />
+          {selectedImage === image.url && (
+            <div style={{
+              position: 'absolute',
+              top: '5px',
+              right: '5px',
+              background: '#6B8E6F',
+              color: 'white',
+              borderRadius: '50%',
+              width: '24px',
+              height: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.75rem',
+              fontWeight: 'bold'
+            }}>
+              ✓
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/**
  * Admin Puzzle Manager - Gestione Completa Puzzle
  * Usa backend API per persistenza condivisa
  */
@@ -505,11 +605,53 @@ const AdminPuzzleManager = () => {
                   Immagine Puzzle *
                 </label>
                 
-                {/* Image Upload Component */}
-                <div style={{ marginBottom: '1rem' }}>
+                {/* Galleria Immagini Disponibili */}
+                <ImageGallerySelector 
+                  onSelectImage={(imageUrl, imageData) => {
+                    console.log('🖼️ Immagine selezionata dalla galleria:', imageUrl);
+                    setFormData({
+                      ...formData,
+                      image_url: imageUrl,
+                      thumbnail_url: imageUrl,
+                      original_image: {
+                        url: imageUrl,
+                        width: imageData?.width || 800,
+                        height: imageData?.height || 600
+                      }
+                    });
+                  }}
+                  selectedImage={formData.image_url}
+                />
+                
+                {/* Preview immagine selezionata */}
+                {formData.image_url && (
+                  <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                    <img 
+                      src={formData.image_url} 
+                      alt="Preview" 
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '200px',
+                        borderRadius: '10px',
+                        border: '2px solid #6B8E6F'
+                      }}
+                    />
+                  </div>
+                )}
+                
+                {/* Carica nuova immagine (opzionale) */}
+                <details style={{ marginTop: '1rem' }}>
+                  <summary style={{ 
+                    color: '#8B7355', 
+                    cursor: 'pointer', 
+                    fontSize: '0.875rem',
+                    marginBottom: '0.5rem'
+                  }}>
+                    Oppure carica una nuova immagine
+                  </summary>
                   <ImageUpload
                     onUploadSuccess={(imageData) => {
-                      console.log('🖼️ Immagine caricata:', imageData);
+                      console.log('🖼️ Nuova immagine caricata:', imageData);
                       setFormData({
                         ...formData, 
                         image_url: imageData.url,
@@ -528,32 +670,6 @@ const AdminPuzzleManager = () => {
                     existingImage={formData.image_url}
                     folder="mavi-puzzles"
                     maxSizeMB={10}
-                  />
-                </div>
-                
-                {/* URL manuale (opzionale) */}
-                <details style={{ marginTop: '1rem' }}>
-                  <summary style={{ 
-                    color: '#8B7355', 
-                    cursor: 'pointer', 
-                    fontSize: '0.875rem',
-                    marginBottom: '0.5rem'
-                  }}>
-                    Oppure inserisci URL manualmente
-                  </summary>
-                  <input
-                    type="url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                    placeholder="https://example.com/image.jpg"
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      border: '1px solid rgba(107,142,111,0.3)',
-                      borderRadius: '10px',
-                      fontSize: '0.875rem',
-                      marginTop: '0.5rem'
-                    }}
                   />
                 </details>
               </div>
