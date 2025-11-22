@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import ImageUpload from '../../components/admin/ImageUpload';
 import './AdminUpload.css';
 
-const STORAGE_KEY = 'mavi_uploaded_images';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3002';
 
 /**
  * Pagina Upload Immagini Admin
- * Usa SOLO localStorage per semplicità e affidabilità
+ * Usa Backend con Cloudinary per storage permanente
  */
 const AdminUpload = () => {
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -14,68 +14,70 @@ const AdminUpload = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  // Carica immagini da localStorage
+  // Carica immagini dal backend
   useEffect(() => {
     loadImages();
   }, []);
 
-  const loadImages = () => {
+  const loadImages = async () => {
     setLoading(true);
     try {
-      console.log('📦 Caricamento immagini da localStorage...');
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const images = JSON.parse(stored);
-        console.log(`✅ ${images.length} immagini caricate da localStorage`);
-        setUploadedImages(images);
-      } else {
-        console.log('ℹ️ Nessuna immagine trovata in localStorage');
-        setUploadedImages([]);
+      console.log('📡 Caricamento immagini da backend:', `${BACKEND_URL}/api/images`);
+      const response = await fetch(`${BACKEND_URL}/api/images`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
+      
+      const images = await response.json();
+      console.log(`✅ ${images.length} immagini caricate dal backend`);
+      setUploadedImages(images);
       setError(null);
     } catch (err) {
-      console.error('❌ Errore caricamento da localStorage:', err);
-      setError('Errore nel caricamento delle immagini');
+      console.error('❌ Errore caricamento immagini:', err);
+      setError(`Errore caricamento: ${err.message}`);
       setUploadedImages([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Salva immagini in localStorage
-  const saveToStorage = (images) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(images));
-      console.log('💾 Immagini salvate in localStorage');
-    } catch (err) {
-      console.error('❌ Errore salvataggio localStorage:', err);
-      throw new Error('Impossibile salvare in localStorage');
-    }
-  };
-
   // Handle upload success
-  const handleUploadSuccess = (imageData) => {
-    console.log('✅ Immagine caricata:', imageData);
-    setSuccess('Immagine caricata con successo!');
+  const handleUploadSuccess = async (imageData) => {
+    console.log('✅ Immagine ricevuta, carico su Cloudinary:', imageData);
+    setSuccess('Upload su Cloudinary in corso...');
     setError(null);
     
     try {
-      // Aggiungi ID univoco
-      const newImage = {
-        ...imageData,
-        id: `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        uploaded_at: new Date().toISOString()
-      };
+      // Invia al backend → Cloudinary
+      const response = await fetch(`${BACKEND_URL}/api/images/upload-base64`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data_url: imageData.data_url || imageData.url,
+          name: imageData.name || 'image.jpg'
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Backend error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const savedImage = await response.json();
+      console.log('✅ Immagine salvata su Cloudinary:', savedImage);
       
-      // Aggiorna stato e localStorage
-      const updatedImages = [newImage, ...uploadedImages];
-      setUploadedImages(updatedImages);
-      saveToStorage(updatedImages);
+      setSuccess('✅ Immagine caricata su Cloudinary!');
+      setUploadedImages(prev => [savedImage, ...prev]);
       
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      console.error('❌ Errore salvataggio immagine:', err);
-      setError('Errore nel salvataggio dell\'immagine');
+      console.error('❌ Errore upload backend:', err);
+      setError(`Errore upload: ${err.message}`);
+      setTimeout(() => setError(null), 5000);
     }
   };
 
@@ -94,22 +96,29 @@ const AdminUpload = () => {
   };
 
   // Delete image
-  const handleDeleteImage = (imageId) => {
-    if (!window.confirm('Sei sicuro di voler eliminare questa immagine?')) {
+  const handleDeleteImage = async (imageId) => {
+    if (!window.confirm('Sei sicuro di voler eliminare questa immagine da Cloudinary?')) {
       return;
     }
 
     try {
       console.log('🗑️ Eliminazione immagine:', imageId);
-      const updatedImages = uploadedImages.filter(img => img.id !== imageId);
-      setUploadedImages(updatedImages);
-      saveToStorage(updatedImages);
-      console.log('✅ Immagine eliminata da localStorage');
+      
+      const response = await fetch(`${BACKEND_URL}/api/images/${imageId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      console.log('✅ Immagine eliminata da Cloudinary');
+      setUploadedImages(prev => prev.filter(img => img.id !== imageId));
       setSuccess('Immagine eliminata con successo');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error('❌ Errore eliminazione:', err);
-      setError('Errore nell\'eliminazione dell\'immagine');
+      setError(`Errore eliminazione: ${err.message}`);
       setError(`Errore nell'eliminazione: ${err.message}`);
     }
   };

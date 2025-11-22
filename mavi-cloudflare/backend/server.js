@@ -1,24 +1,37 @@
 import express from 'express';
 import cors from 'cors';
-import multer from 'multer';
-import { v4 as uuidv4 } from 'uuid';
+import { v2 as cloudinary } from 'cloudinary';
+import dotenv from 'dotenv';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3002;
+const PORT = process.env.PORT || 3002;
+
+// Cloudinary Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// CORS Configuration - PERMISSIVO per sviluppo
+app.use(cors({
+  origin: '*', // Permetti tutte le origini
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 // Middleware
-app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
-// Serve static files (uploaded images)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // File paths
 const PUZZLES_FILE = path.join(__dirname, 'data', 'puzzles.json');
@@ -26,6 +39,14 @@ const IMAGES_FILE = path.join(__dirname, 'data', 'images.json');
 
 // Initialize data files
 async function initDataFiles() {
+  const dataDir = path.join(__dirname, 'data');
+  try {
+    await fs.access(dataDir);
+  } catch {
+    await fs.mkdir(dataDir, { recursive: true });
+    console.log('✅ Created data directory');
+  }
+
   try {
     await fs.access(PUZZLES_FILE);
   } catch {
@@ -61,114 +82,18 @@ async function writeJSON(filePath, data) {
   }
 }
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: async (req, file, cb) => {
-    const uploadDir = path.join(__dirname, 'uploads');
-    try {
-      await fs.access(uploadDir);
-    } catch {
-      await fs.mkdir(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = `${uuidv4()}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
-  }
-});
-
-const upload = multer({ 
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
-});
-
 // Health check
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     service: 'MAVI Puzzle Backend',
-    version: '1.0.0',
+    version: '2.0.0',
+    cloudinary: cloudinary.config().cloud_name ? 'configured' : 'not configured',
     timestamp: new Date().toISOString()
   });
 });
 
-// ============ IMAGES API ============
-
-// Upload image
-app.post('/api/images/upload', upload.single('image'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No image file provided' });
-    }
-
-    const imageData = {
-      id: uuidv4(),
-      name: req.file.originalname,
-      filename: req.file.filename,
-      url: `/uploads/${req.file.filename}`,
-      size: req.file.size,
-      mimetype: req.file.mimetype,
-      uploaded_at: new Date().toISOString()
-    };
-
-    const images = await readJSON(IMAGES_FILE);
-    images.push(imageData);
-    await writeJSON(IMAGES_FILE, images);
-
-    console.log('✅ Image uploaded:', imageData.name);
-    res.json(imageData);
-  } catch (err) {
-    console.error('❌ Upload error:', err);
-    res.status(500).json({ error: 'Upload failed', message: err.message });
-  }
-});
-
-// Upload base64 image
-app.post('/api/images/upload-base64', async (req, res) => {
-  try {
-    const { data_url, name } = req.body;
-
-    if (!data_url || !data_url.startsWith('data:image')) {
-      return res.status(400).json({ error: 'Invalid base64 image data' });
-    }
-
-    // Extract base64 data
-    const matches = data_url.match(/^data:image\/(\w+);base64,(.+)$/);
-    if (!matches) {
-      return res.status(400).json({ error: 'Invalid data URL format' });
-    }
-
-    const ext = matches[1];
-    const base64Data = matches[2];
-    const buffer = Buffer.from(base64Data, 'base64');
-
-    // Save to file
-    const filename = `${uuidv4()}.${ext}`;
-    const filePath = path.join(__dirname, 'uploads', filename);
-    await fs.writeFile(filePath, buffer);
-
-    const imageData = {
-      id: uuidv4(),
-      name: name || `image.${ext}`,
-      filename,
-      url: `/uploads/${filename}`,
-      size: buffer.length,
-      mimetype: `image/${ext}`,
-      uploaded_at: new Date().toISOString()
-    };
-
-    const images = await readJSON(IMAGES_FILE);
-    images.push(imageData);
-    await writeJSON(IMAGES_FILE, images);
-
-    console.log('✅ Base64 image uploaded:', imageData.name);
-    res.json(imageData);
-  } catch (err) {
-    console.error('❌ Base64 upload error:', err);
-    res.status(500).json({ error: 'Upload failed', message: err.message });
-  }
-});
+// ============ IMAGES API with Cloudinary ============
 
 // Get all images
 app.get('/api/images', async (req, res) => {
@@ -176,39 +101,84 @@ app.get('/api/images', async (req, res) => {
     const images = await readJSON(IMAGES_FILE);
     res.json(images);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch images', message: err.message });
+    res.status(500).json({ error: 'Failed to load images' });
   }
 });
 
-// Delete image
+// Upload image to Cloudinary (Base64)
+app.post('/api/images/upload-base64', async (req, res) => {
+  try {
+    const { data_url, name } = req.body;
+
+    if (!data_url) {
+      return res.status(400).json({ error: 'No image data provided' });
+    }
+
+    console.log('📤 Uploading image to Cloudinary:', name);
+
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(data_url, {
+      folder: 'mavi-puzzles',
+      resource_type: 'auto',
+      public_id: name ? name.replace(/\.[^/.]+$/, '') : undefined
+    });
+
+    console.log('✅ Cloudinary upload successful:', result.public_id);
+
+    // Save metadata to local JSON
+    const images = await readJSON(IMAGES_FILE);
+    const newImage = {
+      id: result.public_id,
+      name: name || result.original_filename,
+      url: result.secure_url,
+      thumbnail_url: result.secure_url.replace('/upload/', '/upload/w_400,h_400,c_fill/'),
+      width: result.width,
+      height: result.height,
+      format: result.format,
+      size: result.bytes,
+      cloudinary_id: result.public_id,
+      uploaded_at: new Date().toISOString()
+    };
+
+    images.push(newImage);
+    await writeJSON(IMAGES_FILE, images);
+
+    res.json(newImage);
+  } catch (err) {
+    console.error('❌ Cloudinary upload error:', err);
+    res.status(500).json({ 
+      error: 'Failed to upload image to Cloudinary',
+      details: err.message 
+    });
+  }
+});
+
+// Delete image from Cloudinary
 app.delete('/api/images/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const images = await readJSON(IMAGES_FILE);
-    const imageIndex = images.findIndex(img => img.id === id);
+    const image = images.find(img => img.id === id || img.cloudinary_id === id);
 
-    if (imageIndex === -1) {
+    if (!image) {
       return res.status(404).json({ error: 'Image not found' });
     }
 
-    const image = images[imageIndex];
-    
-    // Delete file
-    try {
-      const filePath = path.join(__dirname, 'uploads', image.filename);
-      await fs.unlink(filePath);
-    } catch (err) {
-      console.warn('File already deleted or not found:', image.filename);
+    // Delete from Cloudinary
+    if (image.cloudinary_id) {
+      console.log('🗑️ Deleting from Cloudinary:', image.cloudinary_id);
+      await cloudinary.uploader.destroy(image.cloudinary_id);
     }
 
-    // Remove from data
-    images.splice(imageIndex, 1);
-    await writeJSON(IMAGES_FILE, images);
+    // Remove from JSON
+    const updatedImages = images.filter(img => img.id !== id);
+    await writeJSON(IMAGES_FILE, updatedImages);
 
-    console.log('✅ Image deleted:', image.name);
+    console.log('✅ Image deleted:', id);
     res.json({ success: true, message: 'Image deleted' });
   } catch (err) {
-    res.status(500).json({ error: 'Delete failed', message: err.message });
+    console.error('❌ Delete error:', err);
+    res.status(500).json({ error: 'Failed to delete image' });
   }
 });
 
@@ -218,139 +188,118 @@ app.delete('/api/images/:id', async (req, res) => {
 app.get('/api/puzzles', async (req, res) => {
   try {
     const puzzles = await readJSON(PUZZLES_FILE);
-    const { status, category, is_featured } = req.query;
-
-    let filtered = puzzles;
-
-    if (status) {
-      filtered = filtered.filter(p => p.status === status);
-    }
-    if (category) {
-      filtered = filtered.filter(p => p.category === category);
-    }
-    if (is_featured !== undefined) {
-      const featured = is_featured === 'true';
-      filtered = filtered.filter(p => p.is_featured === featured);
-    }
-
-    res.json(filtered);
+    res.json(puzzles);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch puzzles', message: err.message });
+    res.status(500).json({ error: 'Failed to load puzzles' });
   }
 });
 
-// Get puzzle by ID
+// Get single puzzle
 app.get('/api/puzzles/:id', async (req, res) => {
   try {
-    const { id } = req.params;
     const puzzles = await readJSON(PUZZLES_FILE);
-    const puzzle = puzzles.find(p => p.id === id);
-
+    const puzzle = puzzles.find(p => p.id === req.params.id);
+    
     if (!puzzle) {
       return res.status(404).json({ error: 'Puzzle not found' });
     }
-
+    
     res.json(puzzle);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch puzzle', message: err.message });
+    res.status(500).json({ error: 'Failed to load puzzle' });
   }
 });
 
 // Create puzzle
 app.post('/api/puzzles', async (req, res) => {
   try {
-    const puzzleData = {
-      id: req.body.id || uuidv4(),
-      title: req.body.title,
-      description: req.body.description,
-      category: req.body.category || 'Generale',
-      image_url: req.body.image_url,
-      thumbnail_url: req.body.thumbnail_url || req.body.image_url,
-      original_image: req.body.original_image || {},
-      status: req.body.status || 'published',
-      is_featured: req.body.is_featured || false,
-      difficulty_available: req.body.difficulty_available || ['easy', 'medium', 'hard'],
-      metadata: req.body.metadata || { total_plays: 0, avg_time: 0, avg_score: 0 },
-      created_at: req.body.created_at || new Date().toISOString(),
+    const puzzles = await readJSON(PUZZLES_FILE);
+    const newPuzzle = {
+      id: `puzzle_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      ...req.body,
+      created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
-
-    const puzzles = await readJSON(PUZZLES_FILE);
-    puzzles.push(puzzleData);
+    
+    puzzles.push(newPuzzle);
     await writeJSON(PUZZLES_FILE, puzzles);
-
-    console.log('✅ Puzzle created:', puzzleData.title);
-    res.status(201).json(puzzleData);
+    
+    console.log('✅ Puzzle created:', newPuzzle.id);
+    res.json(newPuzzle);
   } catch (err) {
-    console.error('❌ Create error:', err);
-    res.status(500).json({ error: 'Failed to create puzzle', message: err.message });
+    console.error('❌ Create puzzle error:', err);
+    res.status(500).json({ error: 'Failed to create puzzle' });
   }
 });
 
 // Update puzzle
 app.put('/api/puzzles/:id', async (req, res) => {
   try {
-    const { id } = req.params;
     const puzzles = await readJSON(PUZZLES_FILE);
-    const puzzleIndex = puzzles.findIndex(p => p.id === id);
-
-    if (puzzleIndex === -1) {
+    const index = puzzles.findIndex(p => p.id === req.params.id);
+    
+    if (index === -1) {
       return res.status(404).json({ error: 'Puzzle not found' });
     }
-
-    puzzles[puzzleIndex] = {
-      ...puzzles[puzzleIndex],
+    
+    puzzles[index] = {
+      ...puzzles[index],
       ...req.body,
-      id, // Preserve ID
+      id: req.params.id,
       updated_at: new Date().toISOString()
     };
-
+    
     await writeJSON(PUZZLES_FILE, puzzles);
-
-    console.log('✅ Puzzle updated:', puzzles[puzzleIndex].title);
-    res.json(puzzles[puzzleIndex]);
+    
+    console.log('✅ Puzzle updated:', req.params.id);
+    res.json(puzzles[index]);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update puzzle', message: err.message });
+    console.error('❌ Update puzzle error:', err);
+    res.status(500).json({ error: 'Failed to update puzzle' });
   }
 });
 
 // Delete puzzle
 app.delete('/api/puzzles/:id', async (req, res) => {
   try {
-    const { id } = req.params;
     const puzzles = await readJSON(PUZZLES_FILE);
-    const puzzleIndex = puzzles.findIndex(p => p.id === id);
-
-    if (puzzleIndex === -1) {
+    const updatedPuzzles = puzzles.filter(p => p.id !== req.params.id);
+    
+    if (puzzles.length === updatedPuzzles.length) {
       return res.status(404).json({ error: 'Puzzle not found' });
     }
-
-    const deletedPuzzle = puzzles[puzzleIndex];
-    puzzles.splice(puzzleIndex, 1);
-    await writeJSON(PUZZLES_FILE, puzzles);
-
-    console.log('✅ Puzzle deleted:', deletedPuzzle.title);
+    
+    await writeJSON(PUZZLES_FILE, updatedPuzzles);
+    
+    console.log('✅ Puzzle deleted:', req.params.id);
     res.json({ success: true, message: 'Puzzle deleted' });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete puzzle', message: err.message });
+    console.error('❌ Delete puzzle error:', err);
+    res.status(500).json({ error: 'Failed to delete puzzle' });
   }
 });
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Endpoint not found' });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('❌ Server error:', err);
+  res.status(500).json({ error: 'Internal server error', details: err.message });
+});
+
 // Start server
-async function startServer() {
-  await initDataFiles();
-  
-  app.listen(PORT, '0.0.0.0', () => {
+initDataFiles().then(() => {
+  app.listen(PORT, () => {
     console.log('');
-    console.log('🚀 ========================================');
-    console.log('🎮 MAVI Puzzle Backend API');
-    console.log('🚀 ========================================');
-    console.log(`📡 Server running on http://localhost:${PORT}`);
-    console.log(`💚 Health check: http://localhost:${PORT}/health`);
-    console.log(`📁 Uploads: http://localhost:${PORT}/uploads`);
-    console.log('🚀 ========================================');
+    console.log('🚀 MAVI Puzzle Backend API');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log(`📡 Server running on: http://localhost:${PORT}`);
+    console.log(`🏥 Health check: http://localhost:${PORT}/health`);
+    console.log(`☁️  Cloudinary: ${cloudinary.config().cloud_name || 'NOT CONFIGURED'}`);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('');
   });
-}
-
-startServer();
+});
